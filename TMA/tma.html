@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Target Motion Analysis</title>
+    <meta name="description" content="TMA">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="tma.css">
+</head>
+
+<body>
+    <canvas id='canvas'></canvas>
+
+    <form id='readout'>
+        <div id="selection">
+            <div>
+                <lable for="plot">Plot</lable>
+                <input type="radio" name="plotType" id="plot" onclick="drawPlot(), setReadout()" checked>
+            </div>
+            <div>
+                <lable for="cpa">CPA</lable>
+                <input type="radio" name="plotType" id="cpa" onclick="drawCPA(), setReadout()">
+            </div>
+        </div>
+        <div id="generalData">
+            <div class="inpt">
+                <label for="los" class="name-label">LOS</label>
+                <input type="text" id="los" name="los" class="input_boxes" min="0" max="359.9">
+            </div>
+            <div class="inpt">
+                <label for="tbo" class="name-label">TBO</label>
+                <input type="text" id="tbo" name="tbo" class="input_boxes" readonly>
+            </div>
+        </div>
+        <div id="platformWrapper">
+            <div id="osParams">
+                <div class="inpt">
+                    <input type="checkbox" id="os" name="osOnOff" value="show" checked>
+                    <label for="os" class='heading'> Ownship</label>
+                </div>
+                <div class="inpt">
+                    <label for="SPDo" class="name-label">SPDo</label>
+                    <input type="text" id="SPDo" name="SPDo" class="input_boxes" min="0" max="20">
+                </div>
+                <div class="inpt">
+                    <label for="CRSo" class="name-label">CRSo</label>
+                    <input type="text" id="CRSo" name="CRSo" class="input_boxes" min="0" max="359.9">
+                </div>
+                <div class="inpt">
+                    <label for="lla" class="name-label">LLA</label>
+                    <input type="text" id="lla" name="lla" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="soi" class="name-label">SoI</label>
+                    <input type="text" id="soi" name="soi" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="soa" class="name-label">SoA</label>
+                    <input type="text" id="soa" name="soa" class="input_boxes" readonly>
+                </div>
+            </div>
+            <div id='lowerReadouts'>
+                <div id='lower'>
+                    <div class="inpt">
+                        <label for="sri" class="name-label">SrI</label>
+                        <input type="text" id="sri" name="sri" class="input_boxes" readonly>
+                    </div><br>
+                    <div class="inpt">
+                        <label for="sra" class="name-label">SrA</label>
+                        <input type="text" id="sra" name="sra" class="input_boxes" readonly>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tgtParams">
+                <div class="inpt">
+                    <input type="checkbox" id="tgt" name="tgtOnOff" value="show" checked>
+                    <label for="tgt" class='heading'> Target</label>
+                </div>
+                <div class="inpt">
+                    <label for="SPDt" class="name-label">SPDt</label>
+                    <input type="text" id="SPDt" name="SPDt" class="input_boxes" min="0" max="20">
+                </div>
+                <div class="inpt">
+                    <label for="CRSt" class="name-label">CRSt</label>
+                    <input type="text" id="CRSt" name="CRSt" class="input_boxes" min="0" max="359.9">
+                </div>
+                <div class="inpt">
+                    <label for="aob" class="name-label">AOB</label>
+                    <input type="text" id="aob" name="aob" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="sti" class="name-label">StI</label>
+                    <input type="text" id="sti" name="sti" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="sta" class="name-label">StA</label>
+                    <input type="text" id="sta" name="sta" class="input_boxes" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <h3>Closest Point of Approach</h3>
+        <div id="cpaReadout">
+            <div id="cpaInputs">
+                <p>Inputs</p>
+                <div class="inpt">
+                    <label for="brg" class="name-label">TGT BRG</label>
+                    <input type="text" id="brg" name="brg" value="0" class="input_boxes">
+                </div>
+                <div class="inpt">
+                    <label for="rng" class="name-label">TGT RNG</label>
+                    <input type="text" id="rng" name="rng" value="15" class="input_boxes">
+                </div>
+            </div>
+            <div id="cpaOutput">
+                <p>Solution</p>
+                <div class="inpt">
+                    <label for="cpaBrg" class="name-label">BRG</label>
+                    <input type="text" id="cpaBrg" name="cpaBrg" value="4" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="cpaRng" class="name-label">RNG</label>
+                    <input type="text" id="cpaRng" name="cpaRng" value="4" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="cpaTime" class="name-label">TIME</label>
+                    <input type="text" id="cpaTime" name="cpaTime" value="4" class="input_boxes" readonly>
+                </div>
+            </div>
+        </div>
+        <div id='freq'>
+            <div>
+                <h3>Frequency</h3>
+            </div>
+            <div id="freqInputs">
+                <div class="inpt">
+                    <label for="FRQr" class="name-label">FRQr</label>
+                    <input type="text" id="FRQr" name="FRQr" class="input_boxes">
+                </div>
+                <div class="inpt">
+                    <label for="FRQo" class="name-label">FRQo</label>
+                    <input type="text" id="FRQo" name="FRQo" class="input_boxes" readonly>
+                </div>
+                <div class="inpt">
+                    <label for="ss" class="name-label">SS</label>
+                    <input type="text" id="ss" name="ss" class="input_boxes">
+                </div>
+            </div>
+        </div>
+    </form>
+    <script src="main.js"></script>
+    <script src="math.js"></script>
+    <script src="readout.js"></script>
+</body>
+
+</html>
