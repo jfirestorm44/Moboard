@@ -270,7 +270,7 @@ function drawOpenCloseLine() {
     ctx.moveTo(0, vector.pt2.y);
     ctx.lineTo(canvas.width, vector.pt2.y);
     ctx.closePath();
-    ctx.stroke(); 
+    ctx.stroke();
 }
 
 function drawSRM() {

@@ -53,13 +53,13 @@ body {
 #osParams {
     display: flex;
     flex-direction: column;
-    align-items:flex-end;
+    align-items: flex-end;
 }
 
 #tgtParams {
     display: flex;
     flex-direction: column;
-    align-items:flex-end;
+    align-items: flex-end;
 }
 
 .inpt {
@@ -87,7 +87,18 @@ h4 {
     text-align: center;
 }
 
-#soi, #soa, #sti, #sta, #tbo, #lla, #aob, #sri, #sra, #cpaBrg, #cpaRng, #cpaTime {
+#soi,
+#soa,
+#sti,
+#sta,
+#tbo,
+#lla,
+#aob,
+#sri,
+#sra,
+#cpaBrg,
+#cpaRng,
+#cpaTime {
     background-color: lightgrey;
 }
 

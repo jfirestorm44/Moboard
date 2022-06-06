@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,10 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="tma.css">
 </head>
-
 <body>
     <canvas id='canvas'></canvas>
-
     <form id='readout'>
         <div id="selection">
             <div>
@@ -25,6 +21,20 @@
                 <input type="radio" name="plotType" id="cpa" onclick="drawCPA(), setReadout()">
             </div>
         </div>
+        <!--<div id="'targetSelection">
+            <div>
+                <lable for="tgt1">TGT 1</lable>
+                <input type="radio" name="tgtSelect" id="tgt1" checked>
+            </div>
+            <div>
+                <lable for="tgt2">TGT 2</lable>
+                <input type="radio" name="tgtSelect" id="tgt2">
+            </div>
+            <div>
+                <lable for="tgt3">TGT 3</lable>
+                <input type="radio" name="tgtSelect" id="tgt3">
+            </div>
+        </div>-->
         <div id="generalData">
             <div class="inpt">
                 <label for="los" class="name-label">LOS</label>
@@ -74,7 +84,6 @@
                     </div>
                 </div>
             </div>
-
             <div id="tgtParams">
                 <div class="inpt">
                     <input type="checkbox" id="tgt" name="tgtOnOff" value="show" checked>
@@ -102,7 +111,6 @@
                 </div>
             </div>
         </div>
-        
         <h3>Closest Point of Approach</h3>
         <div id="cpaReadout">
             <div id="cpaInputs">

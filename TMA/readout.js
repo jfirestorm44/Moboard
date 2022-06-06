@@ -46,46 +46,46 @@ function setReadout() {
 }
 
 function updatePlot() {
-    vector.setSpeed()
-    vector2.setSpeed()
+    vector.setSpeed();
+    vector2.setSpeed();
     llaReadout.value = vector.lla.toFixed(1);
     aobReadout.value = vector2.lla.toFixed(1);
-    losReadout.value = brg.toFixed(1)
+    losReadout.value = brg.toFixed(1);
     tboReadout.value = brg <= 180 ? brg + 180 : brg - 180;
-    osCrsReadout.value = vector.crs.toFixed(1)
-    tgtCrsReadout.value = vector2.crs.toFixed(1)
-    spdoReadout.value = vector.spd.toFixed(2)
-    spdtReadout.value = vector2.spd.toFixed(2)
+    osCrsReadout.value = vector.crs.toFixed(1);
+    tgtCrsReadout.value = vector2.crs.toFixed(1);
+    spdoReadout.value = vector.spd.toFixed(2);
+    spdtReadout.value = vector2.spd.toFixed(2);
     soiReadout.value = vector.si.toFixed(3);
     stiReadout.value = vector2.si.toFixed(3);
     soaReadout.value = Math.abs(vector.sa.toFixed(3));
     staReadout.value = Math.abs(vector2.sa.toFixed(3));
     sriReadout.value = calcSri().toFixed(2);
     sraReadout.value = calcSra().toFixed(2);
-    frqoReadout.value = calcFrqO().toFixed(3);
-    cpaTgtBrgReadout.value = target1.brg.toFixed(1)
-    cpaRngReadout.value = target1.rng.toFixed(2)
+    //frqoReadout.value = calcFrqO().toFixed(3);
+    cpaTgtBrgReadout.value = target1.brg.toFixed(1);
+    cpaRngReadout.value = target1.rng.toFixed(2);
 }
 
 function updateCPA() {
-    vector.setSpeed()
-    vector2.setSpeed()
+    vector.setSpeed();
+    vector2.setSpeed();
     llaReadout.value = vector.lla.toFixed(1);
     aobReadout.value = vector2.lla.toFixed(1);
-    losReadout.value = brg.toFixed(1)
+    losReadout.value = brg.toFixed(1);
     tboReadout.value = brg <= 180 ? brg + 180 : brg - 180;
-    osCrsReadout.value = vector.crs.toFixed(1)
-    tgtCrsReadout.value = vector2.crs.toFixed(1)
-    spdoReadout.value = vector.spd.toFixed(2)
-    spdtReadout.value = vector2.spd.toFixed(2)
+    osCrsReadout.value = vector.crs.toFixed(1);
+    tgtCrsReadout.value = vector2.crs.toFixed(1);
+    spdoReadout.value = vector.spd.toFixed(2);
+    spdtReadout.value = vector2.spd.toFixed(2);
     soiReadout.value = vector.si.toFixed(3);
     stiReadout.value = vector2.si.toFixed(3);
     soaReadout.value = Math.abs(vector.sa.toFixed(3));
     staReadout.value = Math.abs(vector2.sa.toFixed(3));
     sriReadout.value = calcSri().toFixed(2);
     sraReadout.value = calcSra().toFixed(2);
-    cpaTgtBrgReadout.value = target1.brg.toFixed(1)
-    cpaRngReadout.value = target1.rng.toFixed(2)
+    cpaTgtBrgReadout.value = target1.brg.toFixed(1);
+    cpaRngReadout.value = target1.rng.toFixed(2);
 }
 
 losReadout.addEventListener('keydown', e => {
@@ -94,20 +94,21 @@ losReadout.addEventListener('keydown', e => {
             losReadout.value = 0;
         }
         brg = parseInt(losReadout.value)
-        if (plot.checked) drawPlot()
+        if (plot.checked) drawPlot();
     }
 })
 
 spdoReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter) {
-        enter = true
-        vector.spd = parseInt(spdoReadout.value)
-        let l = vector.spd * 10
+        enter = true;
+        if (spdoReadout.value > 30) spdoReadout.value = 30;
+        vector.spd = parseInt(spdoReadout.value);
+        let l = vector.spd * 10;
         let a = calcVectorAngle(vector.pt1, vector.pt2, vector);
-        let aOffset = degreesToRadians(90)
-        vector.pt2.x = vector.pt1.x + l * Math.cos(a + aOffset)
-        vector.pt2.y = vector.pt1.y + l * Math.sin(a + aOffset)
-        if (plot.checked) drawPlot()
+        let aOffset = degreesToRadians(90);
+        vector.pt2.x = vector.pt1.x + l * Math.cos(a + aOffset);
+        vector.pt2.y = vector.pt1.y + l * Math.sin(a + aOffset);
+        if (plot.checked) drawPlot();
         if (cpa.checked) drawCPA();
     }
 })
@@ -115,6 +116,7 @@ spdoReadout.addEventListener('keydown', e => {
 osCrsReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter) {
         enter = true;
+        if (osCrsReadout.value > 359.9) osCrsReadout.value = 359.9;
         let l = vector.spd * 10;
         let a = degreesToRadians(parseInt(osCrsReadout.value));
         let aOffset = degreesToRadians(90 + brg);
@@ -128,11 +130,7 @@ osCrsReadout.addEventListener('keydown', e => {
 tgtCrsReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter) {
         enter = true;
-        if (tgtCrsReadout.value > 359.9) {
-            tgtCrsReadout.style.borderColor = 'red'
-            return
-        }
-        tgtCrsReadout.style.borderColor = 'black';
+        if (tgtCrsReadout.value > 359.9) tgtCrsReadout.value = 359.9;
         let l = vector2.spd * 10;
         let a = degreesToRadians(parseInt(tgtCrsReadout.value));
         let aOffset = degreesToRadians(90 + brg);
@@ -145,44 +143,48 @@ tgtCrsReadout.addEventListener('keydown', e => {
 
 spdtReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter) {
-        enter = true
-        vector2.spd = parseInt(spdtReadout.value)
-        let l = vector2.spd * 10
+        enter = true;
+        if (spdtReadout.value > 30) spdtReadout.value = 30;
+        vector2.spd = parseInt(spdtReadout.value);
+        let l = vector2.spd * 10;
         let a = calcVectorAngle(vector2.pt1, vector2.pt2, vector2);
-        let aOffset = degreesToRadians(90)
-        vector2.pt2.x = vector2.pt1.x + l * Math.cos(a - aOffset)
-        vector2.pt2.y = vector2.pt1.y + l * Math.sin(a - aOffset)
-        if (plot.checked) drawPlot()
+        let aOffset = degreesToRadians(90);
+        vector2.pt2.x = vector2.pt1.x + l * Math.cos(a - aOffset);
+        vector2.pt2.y = vector2.pt1.y + l * Math.sin(a - aOffset);
+        if (plot.checked) drawPlot();
         if (cpa.checked) drawCPA();
     }
 })
 
 ssReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter) {
-        soundSpeed = parseInt(ssReadout.value)
+        soundSpeed = parseInt(ssReadout.value);
     }
 })
 
 frqrReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter) {
-        frqr = parseInt(frqrReadout.value)
+        frqr = parseInt(frqrReadout.value);
     }
 })
 
 //CPA CONTROLS
 cpaTgtBrgReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter && cpa.checked) {
-        target1.brg = parseInt(cpaTgtBrgReadout.value)
-        target1.setPosition()
-        drawCPA()
+        if (cpaTgtBrgReadout.value > 359.9) {
+            cpaTgtBrgReadout.value = 0;
+        }
+        target1.brg = parseInt(cpaTgtBrgReadout.value);
+        target1.setPosition();
+        drawCPA();
     }
 })
 
 cpaRngReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter && cpa.checked) {
-        target1.rng = parseInt(cpaRngReadout.value)
-        target1.setPosition()
-        drawCPA()
+        target1.rng = parseInt(cpaRngReadout.value);
+        target1.setPosition();
+        drawCPA();
     }
 })
 

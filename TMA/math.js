@@ -3,34 +3,30 @@ function calcAngleOfLine(pt1, pt2, v) {
     let dy = pt1.y - pt2.y;
     let theta;
     if (v !== undefined && v.vNum === 1) {
-        theta = Math.atan2(-dy, -dx)
+        theta = Math.atan2(-dy, -dx);
     } else {
         theta = Math.atan2(dy, dx);
     }
-    theta -= Math.PI / 2
+    theta -= Math.PI / 2;
     theta *= 180 / Math.PI;
     if (theta < 0) theta += 360;
-    return theta
-}
-
-function calcZeroReference() {
-
+    return theta;
 }
 
 function calcVectorAngle(v1, v2, v) {
-    let theta = calcAngleOfLine(v1, v2, v)
+    let theta = calcAngleOfLine(v1, v2, v);
     return degreesToRadians(theta);
 }
 
 function calcSra() {
     if ((vector.pt2.x < los.x && vector2.pt2.x < los.x) || (vector.pt2.x >= los.x && vector2.pt2.x >= los.x)) {
-        return Math.abs(Math.abs(vector.sa) - Math.abs(vector2.sa))
+        return Math.abs(Math.abs(vector.sa) - Math.abs(vector2.sa));
     }
-    return Math.abs(Math.abs(vector.sa) + Math.abs(vector2.sa))
+    return Math.abs(Math.abs(vector.sa) + Math.abs(vector2.sa));
 }
 
 function calcSri() {
-    return vector.si + vector2.si
+    return vector.si + vector2.si;
 }
 
 function calcCPA(check) {
@@ -56,22 +52,22 @@ function calcCPA(check) {
 }
 
 function calcSRM() {
-    let theta = calcAngleOfLine(vector.pt2, vector2.pt2)
-    return degreesToRadians(theta)
+    let theta = calcAngleOfLine(vector.pt2, vector2.pt2);
+    return degreesToRadians(theta);
 }
 
 function calcCpaLine(p1, p2, c) {
-    let a = degreesToRadians(calcCPA(c) - 90)
+    let a = degreesToRadians(calcCPA(c) - 90);
     let pt2 = {
         x: canvas.width / 2 + 100 * Math.cos(a),
         y: canvas.height / 2 + 100 * Math.sin(a)
-    }
+    };
     let pt1 = {
         x: canvas.width / 2,
         y: canvas.height / 2
-    }
-    calcTgtDistToCPA(intersectLines(p1, p2, pt1, pt2))
-    calcTgtDistAtCPA(intersectLines(p1, p2, pt1, pt2))
+    };
+    calcTgtDistToCPA(intersectLines(p1, p2, pt1, pt2));
+    calcTgtDistAtCPA(intersectLines(p1, p2, pt1, pt2));
 }
 
 function calcTgtDistToCPA(pt) {
@@ -81,34 +77,36 @@ function calcTgtDistToCPA(pt) {
     }
     let dx = pt.x - target1.x;
     let dy = pt.y - target1.y;
-    let dist = Math.hypot(dx, dy)
-    calcTimeToCPA((dist/5));
+    let dist = Math.hypot(dx, dy);
+    calcTimeToCPA((dist / 5));
 }
 
 function calcTgtDistAtCPA(pt) {
-    if (pt === undefined) {rngAtCpaReadout.value = 'PAST'; return}
+    if (pt === undefined) {
+        rngAtCpaReadout.value = 'PAST';
+        return
+    }
     let dx = pt.x - vector2.pt1.x;
     let dy = pt.y - vector2.pt1.y;
-    let dist = Math.hypot(dx, dy)
-    rngAtCpaReadout.value = (dist/5).toFixed(1);
+    let dist = Math.hypot(dx, dy);
+    rngAtCpaReadout.value = (dist / 5).toFixed(1);
 }
 
 function calcTimeToCPA(dist) {
-    console.log('dist2 '+dist)
     let t = 60 * (dist / target1.spd);
     let time = numToTime(t);
-    timeUntilCpaReadout.value = time; 
+    timeUntilCpaReadout.value = time;
 }
 
 function numToTime(num) {
-        let hours = Math.floor(num / 60);  
-        let minutes = Math.trunc(num % 60);
-        if (minutes.toString().length < 2) {
-          minutes = '0' + minutes; 
-        }
-        return hours + ":" + minutes;
-      }
-  
+    let hours = Math.floor(num / 60);
+    let minutes = Math.trunc(num % 60);
+    if (minutes.toString().length < 2) {
+        minutes = '0' + minutes;
+    }
+    return hours + ":" + minutes;
+}
+
 
 function intersectLines(coord1, coord2, coord3, coord4) {
     let x1 = coord1.x;
@@ -129,11 +127,14 @@ function intersectLines(coord1, coord2, coord3, coord4) {
     let u = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / d;
 
     if (t > 0 && t < 1 && u > 0) {
-        return { x: x1 + t * (x2 - x1), y: y1 + t * (y2 - y1) };
+        return {
+            x: x1 + t * (x2 - x1),
+            y: y1 + t * (y2 - y1)
+        };
     }
     return;
 }
-
+/*
 function calcFrqO() {
     //fr(v + vs)/(v + vr) = fo
     let src, rcvr;
@@ -144,48 +145,6 @@ function calcFrqO() {
     return fo
 }
 
-/*
-function calcLLA() {
-    let distBA_x = vector.pt1.x - vector.pt2.x;
-    let distBA_y = vector.pt1.y - vector.pt2.y;
-    let distBC_x = vector.pt1.x - los.x;
-    let distBC_y = vector.pt1.y - los.y;
-
-    let angle1 = Math.atan2(distBA_x * distBC_y - distBA_y * distBC_x, distBA_x * distBC_x + distBA_y * distBC_y);
-    if (angle1 < 0) {
-        angle1 = angle1 * -1;
-    }
-    lla = angle1 * (180 / Math.PI);
-}
-
-function calcOsCrs() {
-    let dx = vector.pt1.x - vector.pt2.x;
-    let dy = vector.pt1.y - vector.pt2.y;
-    let theta = Math.atan2(dy, dx);
-    theta -= Math.PI / 2;
-    theta *= 180 / Math.PI;
-    if (theta < 0) theta += 360;
-    if (theta >= 180) {
-        osCrs = brg - lla
-    }
-    if (theta < 180) {
-        osCrs = brg + lla
-    }
-    if (osCrs < 0) {
-        osCrs = 360 + osCrs
-    }
-}
-
-
-function calcSoiSoa() {
-    let a = degreesToRadians(brg - osCrs)
-    let a2 = degreesToRadians(brg - tgtCrs)
-    vector.si = Math.cos(a) * vector.spd;
-    vector.sa = Math.sin(a) * vector.spd;
-    vector2.si = Math.cos(a2) * vector2.spd;
-    vector2.sa = Math.sin(a2) * vector2.spd;
-}
-*/
 function doesLineInterceptCircle(A, B, C, radius) {
     var dist;
     const v1x = B.x - A.x;
@@ -212,3 +171,4 @@ function doesLineInterceptCircle(A, B, C, radius) {
     //console.log(dist < radius * radius);
     //console.log((B.x - C.x) ** 2 + (B.y - C.y) ** 2)
 }
+*/
