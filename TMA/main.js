@@ -190,6 +190,9 @@ class Vector {
         this.si = Math.cos(a) * this.spd;
         this.sa = Math.sin(a) * this.spd;
     }
+    SRM() {
+        this.srm = calcSRM(this.pt2);
+    }
     update() {
         let dx = mouse.x - this.pt2.x;
         let dy = mouse.y - this.pt2.y;
@@ -201,10 +204,9 @@ class Vector {
         if (cpa.checked) this.calcLlaCpa();
         this.calcCrs();
         this.calcSiSa();
+        this.SRM()
     }
-    calcSRM() {
-        this.srm = calcSRM(this.pt2);
-    }
+    
 }
 let vector = new Vector(389, 389, 'blue', 1);
 let vector3 = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(450, 450, 'rgb(237, 131, 2)', 2)]
@@ -334,7 +336,7 @@ function drawSRM() {
 }
 
 function drawDRM() {
-    let a = vector3[vectorSelect].calcSRM() - degreesToRadians(90);
+    let a = vector3[vectorSelect].srm - degreesToRadians(90);
     let c = {
         x: canvas.width / 2,
         y: canvas.height / 2

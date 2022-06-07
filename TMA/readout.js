@@ -146,8 +146,8 @@ tgtCrsReadout.addEventListener('keydown', e => {
         let aOffset = degreesToRadians(90 + brg);
         vector3[vectorSelect].pt2.x = vector3[vectorSelect].pt1.x + l * Math.cos(a - aOffset);
         vector3[vectorSelect].pt2.y = vector3[vectorSelect].pt1.y + l * Math.sin(a - aOffset);
-        if (plot.checked) {updatePlot(), drawPlot();}
-        if (cpa.checked) { drawCPA(), updateCPA();}
+        if (plot.checked) drawPlot();
+        if (cpa.checked)  drawCPA()
     }
 })
 
