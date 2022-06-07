@@ -21,16 +21,20 @@ let tbo = {
 };
 let showOS = document.getElementById('os');
 let showTGT = document.getElementById('tgt');
+let tgt1 = document.getElementById('tgt1');
+let tgt2 = document.getElementById('tgt2');
+let tgt3 = document.getElementById('tgt3');
 let soundSpeed = 4800;
 let frqr = 0;
 let zeroReferenceOpp = {
     x: 425,
     y: 850
 };
+let vectorSelect = 0;
 let interval = 1000 * 60;
 let expected = Date.now() + interval;
 plot.checked = 'checked';
-
+tgt1.checked = 'checked';
 class Moboard {
     constructor() {
         this.x = canvas.width / 2;
@@ -154,12 +158,12 @@ class Vector {
         let distBA_x = this.pt1.x - this.pt2.x;
         let distBA_y = this.pt1.y - this.pt2.y;
         let distBC_x, distBC_y, tbo;
-        target1.brg <= 180 ? tbo = target1.brg + 180 : tbo = target1.brg - 180;
+        target[vectorSelect].brg <= 180 ? tbo = target[vectorSelect].brg + 180 : tbo = target[vectorSelect].brg - 180;
         let oppX = canvas.width / 2 + 400 * Math.cos(degreesToRadians(tbo - 90));
         let oppY = canvas.height / 2 + 400 * Math.sin(degreesToRadians(tbo - 90));
         if (this.vNum === 1) {
-            distBC_x = this.pt1.x - target1.x;
-            distBC_y = this.pt1.y - target1.y;
+            distBC_x = this.pt1.x - target[vectorSelect].x;
+            distBC_y = this.pt1.y - target[vectorSelect].y;
         } else {
             distBC_x = this.pt1.x - oppX;
             distBC_y = this.pt1.y - oppY;
@@ -199,25 +203,32 @@ class Vector {
     }
 }
 let vector = new Vector(389, 389, 'blue', 1);
-let vector2 = new Vector(490, 350, 'red', 2);
+let vector3 = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(600, 750, 'rgb(237, 131, 2)', 2)]
 
 class Target {
-    constructor() {
+    constructor(b, c) {
         this.x = 0;
         this.y = 0;
-        this.c = 'red';
+        this.c = c;
         this.rng = 50;
-        this.brg = 0;
-        this.crs = vector2.crs;
-        this.spd = vector2.spd;
+        this.brg = b;
+        this.crs = vector3[vectorSelect].crs;
+        this.spd = vector3[vectorSelect].spd;
+        this.exRng = [12, 43, 56];
+        this.exBrgR = [0, 0, 0];
+        this.exBrgX = [0, 0, 0];
     }
     draw() {
         ctx.setLineDash([]);
-        ctx.strokeStyle = 'red';
+        ctx.strokeStyle = this.c;
         ctx.beginPath();
         ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
         ctx.closePath();
         ctx.stroke();
+    }
+    update() {
+        this.crs = vector3[vectorSelect].crs;
+        this.spd = vector3[vectorSelect].spd;
     }
     setPosition() {
         let l = this.rng * 5;
@@ -234,9 +245,19 @@ class Target {
         this.x = x + distPerMin * Math.cos(a);
         this.y = y + distPerMin * Math.sin(a);
     }
+    updateExpecteds() {
+        expRngReadout0.value = this.exRng[0];
+        expRngReadout1.value = this.exRng[1];
+        expRngReadout2.value = this.exRng[2];
+        expBrgRateReadout[0].value = this.exBrgR[0].toFixed(3);
+        expBrgRateReadout[1].value = this.exBrgR[1].toFixed(3);
+        expBrgRateReadout[2].value = this.exBrgR[2].toFixed(3);
+        expBrgXingReadout[0].value = this.exBrgX[0].toFixed(1);
+        expBrgXingReadout[1].value = this.exBrgX[1].toFixed(1);
+        expBrgXingReadout[2].value = this.exBrgX[2].toFixed(1);
+    }
 }
-let target1 = new Target();
-window.onload = target1.setPosition()
+let target = [new Target(345, 'red'), new Target(0, 'rgb(52, 156, 0)'), new Target(15, 'rgb(237, 131, 2)')]
 
 function drawLOS(brg) {
     los.x = (canvas.width / 2 + Math.cos((-90) * Math.PI / 180) * canvas.width / 2);
@@ -278,7 +299,7 @@ function drawSRM() {
     ctx.strokeStyle = 'red';
     ctx.beginPath();
     ctx.moveTo(vector.pt2.x, vector.pt2.y);
-    ctx.lineTo(vector2.pt2.x, vector2.pt2.y);
+    ctx.lineTo(vector3[vectorSelect].pt2.x, vector3[vectorSelect].pt2.y);
     ctx.closePath();
     ctx.stroke();
 }
@@ -289,22 +310,22 @@ function drawDRM() {
         x: canvas.width / 2,
         y: canvas.height / 2
     };
-    let x2 = target1.x + 800 * Math.cos(a);
-    let y2 = target1.y + 800 * Math.sin(a);
+    let x2 = target[vectorSelect].x + 800 * Math.cos(a);
+    let y2 = target[vectorSelect].y + 800 * Math.sin(a);
     let x3 = c.x + 100 * Math.cos(a);
     let y3 = c.y + 100 * Math.sin(a);
     ctx.setLineDash([5, 10]);
     ctx.strokeStyle = 'red';
     ctx.beginPath();
-    ctx.moveTo(target1.x, target1.y);
+    ctx.moveTo(target[vectorSelect].x, target[vectorSelect].y);
     ctx.lineTo(x2, y2);
     ctx.closePath();
     ctx.stroke();
     //position = sign((Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax))
-    let check = Math.sign((x3 - c.x) * (target1.y - c.y) - (y3 - c.y) * (target1.x - c.x));
+    let check = Math.sign((x3 - c.x) * (target[vectorSelect].y - c.y) - (y3 - c.y) * (target[vectorSelect].x - c.x));
     calcCpaLine({
-        x: target1.x,
-        y: target1.y
+        x: target[vectorSelect].x,
+        y: target[vectorSelect].y
     }, {
         x: x2,
         y: y2
@@ -339,6 +360,42 @@ showTGT.addEventListener('change', () => {
     if (cpa.checked) drawCPA();
 })
 
+tgt1.addEventListener('change', () => {
+    vectorSelect = 0;
+    target[vectorSelect].updateExpecteds()
+    if (plot.checked) {
+        updatePlot();
+        drawPlot();
+    } else {
+        updateCPA();
+        drawCPA();
+    }
+});
+
+tgt2.addEventListener('change', () => {
+    vectorSelect = 1;
+    target[vectorSelect].updateExpecteds()
+    if (plot.checked) {
+        updatePlot();
+        drawPlot();
+    } else {
+        updateCPA();
+        drawCPA();
+    }
+});
+
+tgt3.addEventListener('change', () => {
+    vectorSelect = 2;
+    target[vectorSelect].updateExpecteds()
+    if (plot.checked) {
+        updatePlot();
+        drawPlot();
+    } else {
+        updateCPA();
+        drawCPA();
+    }
+});
+
 function degreesToRadians(deg) {
     return deg * Math.PI / 180;
 }
@@ -355,14 +412,15 @@ function drawPlot() {
     moboard.numbers();
     moboard.draw();
     vector.update();
-    vector2.update();
+    vector3[vectorSelect].update()
+    target[vectorSelect].update();
     if (showOS.checked) {
         vector.draw();
         drawOpenCloseLine();
         drawLeftRight();
     }
     if (showTGT.checked) {
-        vector2.draw();
+        vector3[vectorSelect].draw();
     }
 }
 
@@ -373,15 +431,16 @@ function drawCPA() {
     moboard.numbers();
     moboard.draw();
     vector.update();
-    vector2.update();
-    target1.draw();
+    vector3[vectorSelect].update();
+    target[vectorSelect].draw();
+    target[vectorSelect].update();
     drawSRM();
     drawDRM();
     if (showOS.checked) {
         vector.draw();
     }
     if (showTGT.checked) {
-        vector2.draw();
+        vector3[vectorSelect].draw()
     }
 }
 
@@ -390,12 +449,20 @@ function step() {
     if (dt > interval) {
         expected += dt;
     }
-    target1.updatePosition();
+    target[vectorSelect].updatePosition();
     if (cpa.checked) drawCPA();
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt));
 }
 setTimeout(step, interval);
+
+function load() {
+    target[0].setPosition();
+    target[1].setPosition();
+    target[2].setPosition();
+    drawPlot();
+    updatePlot();
+}
 
 function animate() {
     if (plot.checked) {
@@ -408,4 +475,3 @@ function animate() {
     }
     draw = requestAnimationFrame(animate);
 }
-drawPlot();

@@ -19,18 +19,18 @@ function calcVectorAngle(v1, v2, v) {
 }
 
 function calcSra() {
-    if ((vector.pt2.x < los.x && vector2.pt2.x < los.x) || (vector.pt2.x >= los.x && vector2.pt2.x >= los.x)) {
-        return Math.abs(Math.abs(vector.sa) - Math.abs(vector2.sa));
+    if ((vector.pt2.x < los.x && vector3[vectorSelect].pt2.x < los.x) || (vector.pt2.x >= los.x && vector3[vectorSelect].pt2.x >= los.x)) {
+        return Math.abs(Math.abs(vector.sa) - Math.abs(vector3[vectorSelect].sa));
     }
-    return Math.abs(Math.abs(vector.sa) + Math.abs(vector2.sa));
+    return Math.abs(Math.abs(vector.sa) + Math.abs(vector3[vectorSelect].sa));
 }
 
 function calcSri() {
-    return vector.si + vector2.si;
+    return vector.si + vector3[vectorSelect].si;
 }
 
 function calcCPA(check) {
-    let a = calcAngleOfLine(vector.pt2, vector2.pt2, vector2)
+    let a = calcAngleOfLine(vector.pt2, vector3[vectorSelect].pt2, vector3[vectorSelect])
     if (check === 0) {
         let val = (a - 90) % 360;
         if (val < 0) val += 360;
@@ -52,7 +52,7 @@ function calcCPA(check) {
 }
 
 function calcSRM() {
-    let theta = calcAngleOfLine(vector.pt2, vector2.pt2);
+    let theta = calcAngleOfLine(vector.pt2, vector3[vectorSelect].pt2);
     return degreesToRadians(theta);
 }
 
@@ -75,8 +75,8 @@ function calcTgtDistToCPA(pt) {
         timeUntilCpaReadout.value = 'PAST';
         return
     }
-    let dx = pt.x - target1.x;
-    let dy = pt.y - target1.y;
+    let dx = pt.x - target[vectorSelect].x;
+    let dy = pt.y - target[vectorSelect].y;
     let dist = Math.hypot(dx, dy);
     calcTimeToCPA((dist / 5));
 }
@@ -86,14 +86,14 @@ function calcTgtDistAtCPA(pt) {
         rngAtCpaReadout.value = 'PAST';
         return
     }
-    let dx = pt.x - vector2.pt1.x;
-    let dy = pt.y - vector2.pt1.y;
+    let dx = pt.x - vector3[vectorSelect].pt1.x;
+    let dy = pt.y - vector3[vectorSelect].pt1.y;
     let dist = Math.hypot(dx, dy);
     rngAtCpaReadout.value = (dist / 5).toFixed(1);
 }
 
 function calcTimeToCPA(dist) {
-    let t = 60 * (dist / target1.spd);
+    let t = 60 * (dist / target[vectorSelect].spd);
     let time = numToTime(t);
     timeUntilCpaReadout.value = time;
 }
@@ -107,6 +107,31 @@ function numToTime(num) {
     return hours + ":" + minutes;
 }
 
+function calcExpectedFrq() {
+
+}
+
+function calcExpectedBrgRate(val, num) {
+    let sra = Number(sraReadout.value);
+    let b =  sra * (0.95/val);
+    target[vectorSelect].exBrgR[num] = b;
+    expBrgRateReadout[num].value = b.toFixed(3);
+    calcExpectedBrgXing(b, num);
+}
+
+function calcExpectedBrgXing(val, num) {
+    let x = Math.abs(vector.sa) * (0.95/val);
+    target[vectorSelect].exBrgX[num] = x;
+    expBrgXingReadout[num].value = target[vectorSelect].exBrgX[num].toFixed(1);
+}
+
+function calcFRQc() {
+    let osDopp = vector.si;
+    if (vector.lla < 90) {
+        return parseFloat(frqrReadout.value) - osDopp
+    }
+    return parseFloat(frqrReadout.value) + osDopp
+}
 
 function intersectLines(coord1, coord2, coord3, coord4) {
     let x1 = coord1.x;
@@ -134,11 +159,12 @@ function intersectLines(coord1, coord2, coord3, coord4) {
     }
     return;
 }
+
 /*
 function calcFrqO() {
     //fr(v + vs)/(v + vr) = fo
     let src, rcvr;
-    src = vector2.si >= 0 ? soundSpeed - vector2.si : soundSpeed + vector2.si;
+    src = vector3[vectorSelect].si >= 0 ? soundSpeed - vector3[vectorSelect].si : soundSpeed + vector3[vectorSelect].si;
     rcvr = vector.si >= 0 ? soundSpeed + vector.si : soundSpeed - vector.si;
 
     let fo = frqr * ((src) / (rcvr))
