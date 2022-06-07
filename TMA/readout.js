@@ -23,8 +23,10 @@ let timeUntilCpaReadout = document.getElementById('cpaTime');
 let expRngReadout0 = document.getElementById('rng1');
 let expRngReadout1 = document.getElementById('rng2');
 let expRngReadout2 = document.getElementById('rng3');
-let expBrgRateReadout = [document.getElementById('brgRate1'), document.getElementById('brgRate2'), document.getElementById('brgRate3')]
-let expBrgXingReadout = [document.getElementById('brgXing1'), document.getElementById('brgXing2'), document.getElementById('brgXing3')]
+let expBrgRateReadout = [document.getElementById('brgRate1'), document.getElementById('brgRate2'), document.getElementById('brgRate3')];
+let expBrgXingReadout = [document.getElementById('brgXing1'), document.getElementById('brgXing2'), document.getElementById('brgXing3')];
+let currentBrg = document.getElementById('currentBrg');
+let currentRng = document.getElementById('currentRng');
 let enter = false;
 
 function setReadout() {
@@ -91,6 +93,8 @@ function updateCPA() {
     sraReadout.value = calcSra().toFixed(2);
     cpaTgtBrgReadout.value = target[vectorSelect].brg.toFixed(1);
     cpaRngReadout.value = target[vectorSelect].rng.toFixed(2);
+    currentRng.value = target[vectorSelect].currentRng;
+    currentBrg.value = target[vectorSelect].currentBrg;
 }
 
 losReadout.addEventListener('keydown', e => {
@@ -142,8 +146,8 @@ tgtCrsReadout.addEventListener('keydown', e => {
         let aOffset = degreesToRadians(90 + brg);
         vector3[vectorSelect].pt2.x = vector3[vectorSelect].pt1.x + l * Math.cos(a - aOffset);
         vector3[vectorSelect].pt2.y = vector3[vectorSelect].pt1.y + l * Math.sin(a - aOffset);
-        if (plot.checked) drawPlot();
-        if (cpa.checked) drawCPA();
+        if (plot.checked) {updatePlot(), drawPlot();}
+        if (cpa.checked) { drawCPA(), updateCPA();}
     }
 })
 
@@ -183,6 +187,8 @@ cpaTgtBrgReadout.addEventListener('keydown', e => {
         }
         target[vectorSelect].brg = parseInt(cpaTgtBrgReadout.value);
         target[vectorSelect].setPosition();
+        target[vectorSelect].updateCurrentInfo();
+        updateCPA()
         drawCPA();
     }
 })
@@ -191,6 +197,8 @@ cpaRngReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' && !enter && cpa.checked) {
         target[vectorSelect].rng = parseInt(cpaRngReadout.value);
         target[vectorSelect].setPosition();
+        target[vectorSelect].updateCurrentInfo();
+        updateCPA()
         drawCPA();
     }
 })

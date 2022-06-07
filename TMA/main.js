@@ -121,6 +121,7 @@ class Vector {
         this.si = 0;
         this.sa = 0;
         this.vNum = v;
+        this.srm = 0;
     }
     draw() {
         ctx.setLineDash([]);
@@ -201,15 +202,19 @@ class Vector {
         this.calcCrs();
         this.calcSiSa();
     }
+    calcSRM() {
+        this.srm = calcSRM(this.pt2);
+    }
 }
 let vector = new Vector(389, 389, 'blue', 1);
-let vector3 = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(600, 750, 'rgb(237, 131, 2)', 2)]
+let vector3 = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(450, 450, 'rgb(237, 131, 2)', 2)]
 
 class Target {
-    constructor(b, c) {
+    constructor(b, c, num) {
         this.x = 0;
         this.y = 0;
         this.c = c;
+        this.num = num;
         this.rng = 50;
         this.brg = b;
         this.crs = vector3[vectorSelect].crs;
@@ -217,12 +222,20 @@ class Target {
         this.exRng = [12, 43, 56];
         this.exBrgR = [0, 0, 0];
         this.exBrgX = [0, 0, 0];
+        this.currentBrg = 0;
+        this.currentRng = 0;
+        this.srm = 0;
     }
     draw() {
         ctx.setLineDash([]);
         ctx.strokeStyle = this.c;
         ctx.beginPath();
         ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y)
+        ctx.lineTo(this.x + 20 * Math.cos(degreesToRadians(this.crs - 90)), this.y + 20 * Math.sin(degreesToRadians(this.crs - 90)));
         ctx.closePath();
         ctx.stroke();
     }
@@ -239,11 +252,19 @@ class Target {
     updatePosition() {
         let distPerHour = this.spd * 5;
         let distPerMin = distPerHour / 60;
-        let a = calcSRM() - degreesToRadians(90);
+        let a;
+        if (this.num === 0) {
+            a = vector3[0].srm - degreesToRadians(90);
+        } else if (this.num === 1) {
+            a = vector3[1].srm - degreesToRadians(90);
+        } else {
+            a = vector3[2].srm - degreesToRadians(90);
+        }
         let x = this.x;
         let y = this.y;
         this.x = x + distPerMin * Math.cos(a);
         this.y = y + distPerMin * Math.sin(a);
+        this.updateCurrentInfo()
     }
     updateExpecteds() {
         expRngReadout0.value = this.exRng[0];
@@ -256,8 +277,16 @@ class Target {
         expBrgXingReadout[1].value = this.exBrgX[1].toFixed(1);
         expBrgXingReadout[2].value = this.exBrgX[2].toFixed(1);
     }
+    updateCurrentInfo() {
+        let cb = calcAngleOfLine({x: canvas.width/2, y: canvas.height/2}, {x: this.x, y: this.y});
+        this.currentBrg = cb.toFixed(1);
+        let dx = canvas.width/2 - this.x;
+        let dy = canvas.height/2 - this.y;
+        let dist = Math.hypot(dx, dy) / 5;
+        this.currentRng = dist.toFixed(1);
+    }
 }
-let target = [new Target(345, 'red'), new Target(0, 'rgb(52, 156, 0)'), new Target(15, 'rgb(237, 131, 2)')]
+let target = [new Target(345, 'red', 0), new Target(0, 'rgb(52, 156, 0)', 1), new Target(15, 'rgb(237, 131, 2)', 2)]
 
 function drawLOS(brg) {
     los.x = (canvas.width / 2 + Math.cos((-90) * Math.PI / 180) * canvas.width / 2);
@@ -305,7 +334,7 @@ function drawSRM() {
 }
 
 function drawDRM() {
-    let a = calcSRM() - degreesToRadians(90);
+    let a = vector3[vectorSelect].calcSRM() - degreesToRadians(90);
     let c = {
         x: canvas.width / 2,
         y: canvas.height / 2
@@ -432,7 +461,9 @@ function drawCPA() {
     moboard.draw();
     vector.update();
     vector3[vectorSelect].update();
-    target[vectorSelect].draw();
+    target[0].draw();
+    target[1].draw();
+    target[2].draw();
     target[vectorSelect].update();
     drawSRM();
     drawDRM();
@@ -449,8 +480,10 @@ function step() {
     if (dt > interval) {
         expected += dt;
     }
-    target[vectorSelect].updatePosition();
-    if (cpa.checked) drawCPA();
+    target[0].updatePosition();
+    target[1].updatePosition();
+    target[2].updatePosition();
+    if (cpa.checked) {drawCPA(); updateCPA();}
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt));
 }

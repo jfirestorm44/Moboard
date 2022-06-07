@@ -100,7 +100,9 @@ h4 {
 #cpaRng,
 #cpaTime,
 .brgRate,
-.brgXing {
+.brgXing,
+#currentBrg,
+#currentRng {
     background-color: lightgrey;
 }
 
@@ -117,6 +119,12 @@ h4 {
 }
 
 #cpaInputs {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#currentInfo {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
