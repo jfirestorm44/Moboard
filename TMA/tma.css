@@ -1,7 +1,8 @@
 body {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
 }
 
 #canvas {
@@ -9,10 +10,9 @@ body {
 }
 
 #readout {
-    position: sticky;
-    top: 10px;
-    flex-grow: 1;
-    height: 97vh;
+    width: fit-content;
+    height: fit-content;
+    padding: 0 20px 5px 20px;
     border-style: solid;
     border-width: 2px;
     border-radius: 5px;
@@ -176,7 +176,6 @@ label {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    margin-top: 0px;
 }
 
 .expecteds {
@@ -186,3 +185,6 @@ label {
     text-align: center;
 }
 
+.rngInput, .brgRate, .brgXing {
+    margin: 3px;
+}

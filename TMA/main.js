@@ -1,9 +1,7 @@
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
-
 canvas.width = 850;
 canvas.height = 850;
-
 let canvasBounds = canvas.getBoundingClientRect();
 let brg = 0;
 let mouse = {
@@ -24,7 +22,7 @@ let showTGT = document.getElementById('tgt');
 let tgt1 = document.getElementById('tgt1');
 let tgt2 = document.getElementById('tgt2');
 let tgt3 = document.getElementById('tgt3');
-let soundSpeed = 4800;
+let soundSpeed = 0;
 let frqr = 0;
 let zeroReferenceOpp = {
     x: 425,
@@ -35,6 +33,7 @@ let interval = 1000 * 60;
 let expected = Date.now() + interval;
 plot.checked = 'checked';
 tgt1.checked = 'checked';
+
 class Moboard {
     constructor() {
         this.x = canvas.width / 2;
@@ -190,8 +189,11 @@ class Vector {
         this.si = Math.cos(a) * this.spd;
         this.sa = Math.sin(a) * this.spd;
     }
+    calcFrq() {
+        
+    }
     SRM() {
-        this.srm = calcSRM(this.pt2);
+        if (this.vNum !== 1) this.srm = calcSRM(this.pt2);
     }
     update() {
         let dx = mouse.x - this.pt2.x;
@@ -209,7 +211,7 @@ class Vector {
     
 }
 let vector = new Vector(389, 389, 'blue', 1);
-let vector3 = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(450, 450, 'rgb(237, 131, 2)', 2)]
+let tgtVector = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(450, 450, 'rgb(237, 131, 2)', 2)]
 
 class Target {
     constructor(b, c, num) {
@@ -219,14 +221,19 @@ class Target {
         this.num = num;
         this.rng = 50;
         this.brg = b;
-        this.crs = vector3[vectorSelect].crs;
-        this.spd = vector3[vectorSelect].spd;
-        this.exRng = [12, 43, 56];
+        this.crs = tgtVector[vectorSelect].crs;
+        this.spd = tgtVector[vectorSelect].spd;
+        this.exRng = [0, 0, 0];
         this.exBrgR = [0, 0, 0];
         this.exBrgX = [0, 0, 0];
         this.currentBrg = 0;
         this.currentRng = 0;
         this.srm = 0;
+        this.frqr = 0;
+        this.frqc = 0;
+        this.frqo = 0;
+        this.ss = 0;
+        this.timeLate = 0;
     }
     draw() {
         ctx.setLineDash([]);
@@ -242,25 +249,43 @@ class Target {
         ctx.stroke();
     }
     update() {
-        this.crs = vector3[vectorSelect].crs;
-        this.spd = vector3[vectorSelect].spd;
+        this.crs = tgtVector[vectorSelect].crs;
+        this.spd = tgtVector[vectorSelect].spd;
     }
     setPosition() {
         let l = this.rng * 5;
         let a = degreesToRadians(this.brg - 90);
         this.x = canvas.width / 2 + l * Math.cos(a);
         this.y = canvas.height / 2 + l * Math.sin(a);
+        let pt1 = {x: this.x, y: this.y}
+        let pt2;
+        let t = this.timeLate / 60;
+        if (this.timeLate > 0) {
+            let d = 5 * (this.spd * t);
+            let a;
+            if (this.num === 0) {
+                a = tgtVector[0].srm - degreesToRadians(90);
+            } else if (this.num === 1) {
+                a = tgtVector[1].srm - degreesToRadians(90);
+            } else {
+                a = tgtVector[2].srm - degreesToRadians(90);
+            }
+            let x = this.x;
+            let y = this.y;
+            this.x = x + d * Math.cos(a);
+            this.y = y + d * Math.sin(a);
+        }
     }
     updatePosition() {
         let distPerHour = this.spd * 5;
         let distPerMin = distPerHour / 60;
         let a;
         if (this.num === 0) {
-            a = vector3[0].srm - degreesToRadians(90);
+            a = tgtVector[0].srm - degreesToRadians(90);
         } else if (this.num === 1) {
-            a = vector3[1].srm - degreesToRadians(90);
+            a = tgtVector[1].srm - degreesToRadians(90);
         } else {
-            a = vector3[2].srm - degreesToRadians(90);
+            a = tgtVector[2].srm - degreesToRadians(90);
         }
         let x = this.x;
         let y = this.y;
@@ -330,13 +355,13 @@ function drawSRM() {
     ctx.strokeStyle = 'red';
     ctx.beginPath();
     ctx.moveTo(vector.pt2.x, vector.pt2.y);
-    ctx.lineTo(vector3[vectorSelect].pt2.x, vector3[vectorSelect].pt2.y);
+    ctx.lineTo(tgtVector[vectorSelect].pt2.x, tgtVector[vectorSelect].pt2.y);
     ctx.closePath();
     ctx.stroke();
 }
 
 function drawDRM() {
-    let a = vector3[vectorSelect].srm - degreesToRadians(90);
+    let a = tgtVector[vectorSelect].srm - degreesToRadians(90);
     let c = {
         x: canvas.width / 2,
         y: canvas.height / 2
@@ -377,8 +402,9 @@ canvas.addEventListener("mousedown", () => {
 canvas.addEventListener("mouseup", () => {
     mouse.clicked = false;
     cancelAnimationFrame(draw);
-    if (plot.checked) updatePlot();
-    if (cpa.checked) updateCPA();
+    //if (plot.checked) updatePlot();
+    //if (cpa.checked) updateCPA();
+    updateReadout()
 })
 
 showOS.addEventListener('change', () => {
@@ -394,37 +420,43 @@ showTGT.addEventListener('change', () => {
 tgt1.addEventListener('change', () => {
     vectorSelect = 0;
     target[vectorSelect].updateExpecteds()
+    updateReadout()
     if (plot.checked) {
-        updatePlot();
+        //updatePlot();
         drawPlot();
     } else {
-        updateCPA();
+        //updateCPA();
         drawCPA();
     }
+    updateReadout()
 });
 
 tgt2.addEventListener('change', () => {
     vectorSelect = 1;
     target[vectorSelect].updateExpecteds()
+    updateReadout()
     if (plot.checked) {
-        updatePlot();
+        //updatePlot();
         drawPlot();
     } else {
-        updateCPA();
+        //updateCPA();
         drawCPA();
     }
+    updateReadout()
 });
 
 tgt3.addEventListener('change', () => {
     vectorSelect = 2;
     target[vectorSelect].updateExpecteds()
+    updateReadout()
     if (plot.checked) {
-        updatePlot();
+        //updatePlot();
         drawPlot();
     } else {
-        updateCPA();
+        //updateCPA();
         drawCPA();
     }
+    updateReadout()
 });
 
 function degreesToRadians(deg) {
@@ -443,7 +475,7 @@ function drawPlot() {
     moboard.numbers();
     moboard.draw();
     vector.update();
-    vector3[vectorSelect].update()
+    tgtVector[vectorSelect].update()
     target[vectorSelect].update();
     if (showOS.checked) {
         vector.draw();
@@ -451,7 +483,7 @@ function drawPlot() {
         drawLeftRight();
     }
     if (showTGT.checked) {
-        vector3[vectorSelect].draw();
+        tgtVector[vectorSelect].draw();
     }
 }
 
@@ -462,18 +494,18 @@ function drawCPA() {
     moboard.numbers();
     moboard.draw();
     vector.update();
-    vector3[vectorSelect].update();
+    tgtVector[vectorSelect].update();
+    target[vectorSelect].update();
     target[0].draw();
     target[1].draw();
     target[2].draw();
-    target[vectorSelect].update();
     drawSRM();
     drawDRM();
     if (showOS.checked) {
         vector.draw();
     }
     if (showTGT.checked) {
-        vector3[vectorSelect].draw()
+        tgtVector[vectorSelect].draw()
     }
 }
 
@@ -485,7 +517,7 @@ function step() {
     target[0].updatePosition();
     target[1].updatePosition();
     target[2].updatePosition();
-    if (cpa.checked) {drawCPA(); updateCPA();}
+    if (cpa.checked) {drawCPA(); updateReadout();}
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt));
 }
@@ -496,17 +528,19 @@ function load() {
     target[1].setPosition();
     target[2].setPosition();
     drawPlot();
-    updatePlot();
+    setReadout();
+    updateReadout();
 }
 
 function animate() {
+    updateReadout()
     if (plot.checked) {
         drawPlot();
-        updatePlot();
+        //updatePlot();
     }
     if (cpa.checked) {
         drawCPA();
-        updateCPA();
+        //updateCPA();
     }
     draw = requestAnimationFrame(animate);
 }

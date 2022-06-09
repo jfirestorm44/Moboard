@@ -11,7 +11,9 @@
 </head>
 
 <body>
-    <canvas id='canvas'></canvas>
+    <div>
+        <canvas id='canvas'></canvas>
+    </div>
     <form id='readout'>
         <div id="selection">
             <div>
@@ -37,14 +39,14 @@
             <div id="osParams">
                 <div class="inpt">
                     <input type="checkbox" id="os" name="osOnOff" value="show" checked>
-                    <label for="os" class='heading'> Ownship</label>
+                    <label for="os" class='heading'>Ownship</label>
                 </div>
                 <div class="inpt">
-                    <label for="SPDo" class="name-label">SPDo</label>
+                    <label for="SPDo" class="name-label">SPD<sub>o</sub></label>
                     <input type="text" id="SPDo" name="SPDo" class="input_boxes" min="0" max="20">
                 </div>
                 <div class="inpt">
-                    <label for="CRSo" class="name-label">CRSo</label>
+                    <label for="CRSo" class="name-label">CRS<sub>o</sub></label>
                     <input type="text" id="CRSo" name="CRSo" class="input_boxes" min="0" max="359.9">
                 </div>
                 <div class="inpt">
@@ -52,22 +54,22 @@
                     <input type="text" id="lla" name="lla" class="input_boxes" readonly>
                 </div>
                 <div class="inpt">
-                    <label for="soi" class="name-label">SoI</label>
+                    <label for="soi" class="name-label">SPD<sub>oi</sub></label>
                     <input type="text" id="soi" name="soi" class="input_boxes" readonly>
                 </div>
                 <div class="inpt">
-                    <label for="soa" class="name-label">SoA</label>
+                    <label for="soa" class="name-label">SPD<sub>oa</sub> </label>
                     <input type="text" id="soa" name="soa" class="input_boxes" readonly>
                 </div>
             </div>
             <div id='lowerReadouts'>
                 <div id='lower'>
                     <div class="inpt">
-                        <label for="sri" class="name-label">SrI</label>
+                        <label for="sri" class="name-label">SPD<sub>ri</sub></label>
                         <input type="text" id="sri" name="sri" class="input_boxes" readonly>
                     </div><br>
                     <div class="inpt">
-                        <label for="sra" class="name-label">SrA</label>
+                        <label for="sra" class="name-label">SPD<sub>ra</sub></label>
                         <input type="text" id="sra" name="sra" class="input_boxes" readonly>
                     </div>
                 </div>
@@ -78,11 +80,11 @@
                     <label for="tgt" class='heading'> Target</label>
                 </div>
                 <div class="inpt">
-                    <label for="SPDt" class="name-label">SPDt</label>
+                    <label for="SPDt" class="name-label">SPD<sub>t</sub></label>
                     <input type="text" id="SPDt" name="SPDt" class="input_boxes" min="0" max="20">
                 </div>
                 <div class="inpt">
-                    <label for="CRSt" class="name-label">CRSt</label>
+                    <label for="CRSt" class="name-label">CRS<sub>t</sub></label>
                     <input type="text" id="CRSt" name="CRSt" class="input_boxes" min="0" max="359.9">
                 </div>
                 <div class="inpt">
@@ -90,11 +92,11 @@
                     <input type="text" id="aob" name="aob" class="input_boxes" readonly>
                 </div>
                 <div class="inpt">
-                    <label for="sti" class="name-label">StI</label>
+                    <label for="sti" class="name-label">SPD<sub>ti</sub></label>
                     <input type="text" id="sti" name="sti" class="input_boxes" readonly>
                 </div>
                 <div class="inpt">
-                    <label for="sta" class="name-label">StA</label>
+                    <label for="sta" class="name-label">SPD<sub>ta</sub></label>
                     <input type="text" id="sta" name="sta" class="input_boxes" readonly>
                 </div>
             </div>
@@ -110,6 +112,10 @@
                 <div class="inpt">
                     <label for="rng" class="name-label">RNG</label>
                     <input type="text" id="rng" name="rng" value="15" class="input_boxes">
+                </div>
+                <div class="inpt">
+                    <label for="timeLate" class="name-label">T/L</label>
+                    <input type="text" id="timeLate" name="timeLate" class="input_boxes">
                 </div>
             </div>
             <div id="currentInfo">
@@ -145,16 +151,20 @@
             </div>
             <div id="freqInputs">
                 <div class="inpt">
-                    <label for="FRQr" class="name-label">FRQr</label>
+                    <label for="ss" class="name-label">SS</label>
+                    <input type="text" id="ss" name="ss" class="input_boxes">
+                </div>
+                <div class="inpt">
+                    <label for="FRQr" class="name-label">FRQ<sub>r</sub></label>
                     <input type="text" id="FRQr" name="FRQr" class="input_boxes">
                 </div>
                 <div class="inpt">
-                    <label for="FRQo" class="name-label">FRQo</label>
-                    <input type="text" id="FRQo" name="FRQo" class="input_boxes" readonly>
+                    <label for="FRQc" class="name-label">FRQ<sub>c</sub></label>
+                    <input type="text" id="FRQc" name="FRQc" class="input_boxes" readonly>
                 </div>
                 <div class="inpt">
-                    <label for="ss" class="name-label">SS</label>
-                    <input type="text" id="ss" name="ss" class="input_boxes">
+                    <label for="FRQo" class="name-label">FRQ<sub>o</sub></label>
+                    <input type="text" id="FRQo" name="FRQo" class="input_boxes" readonly>
                 </div>
             </div>
         </div>
