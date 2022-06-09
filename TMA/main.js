@@ -158,7 +158,7 @@ class Vector {
         let distBA_x = this.pt1.x - this.pt2.x;
         let distBA_y = this.pt1.y - this.pt2.y;
         let distBC_x, distBC_y, tbo;
-        target[vectorSelect].brg <= 180 ? tbo = target[vectorSelect].brg + 180 : tbo = target[vectorSelect].brg - 180;
+        target[vectorSelect].currentBrg <= 180 ? tbo = target[vectorSelect].currentBrg + 180 : tbo = target[vectorSelect].currentBrg - 180;
         let oppX = canvas.width / 2 + 400 * Math.cos(degreesToRadians(tbo - 90));
         let oppY = canvas.height / 2 + 400 * Math.sin(degreesToRadians(tbo - 90));
         if (this.vNum === 1) {
