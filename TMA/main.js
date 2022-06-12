@@ -158,7 +158,7 @@ class Vector {
         let distBA_x = this.pt1.x - this.pt2.x;
         let distBA_y = this.pt1.y - this.pt2.y;
         let distBC_x, distBC_y, tbo;
-        target[vectorSelect].currentBrg <= 180 ? tbo = target[vectorSelect].currentBrg + 180 : tbo = target[vectorSelect].currentBrg - 180;
+        tbo = Number(tboReadout.value);
         let oppX = canvas.width / 2 + 400 * Math.cos(degreesToRadians(tbo - 90));
         let oppY = canvas.height / 2 + 400 * Math.sin(degreesToRadians(tbo - 90));
         if (this.vNum === 1) {
@@ -184,13 +184,15 @@ class Vector {
     }
     calcSiSa() {
         let a, tbo;
-        brg <= 180 ? tbo = brg + 180 : tbo = brg - 180;
-        this.vNum === 1 ? a = degreesToRadians(brg - this.crs) : a = degreesToRadians(tbo - this.crs);
+        tbo = Number(tboReadout.value)
+        if (plot.checked) {
+            this.vNum === 1 ? a = degreesToRadians(brg - this.crs) : a = degreesToRadians(tbo - this.crs);
+        } 
+        else {
+            this.vNum === 1 ? a = degreesToRadians(target[vectorSelect].currentBrg - this.crs) : a = degreesToRadians(tbo - this.crs);
+        }
         this.si = Math.cos(a) * this.spd;
         this.sa = Math.sin(a) * this.spd;
-    }
-    calcFrq() {
-        
     }
     SRM() {
         if (this.vNum !== 1) this.srm = calcSRM(this.pt2);
@@ -202,13 +204,22 @@ class Vector {
             this.pt2.x = mouse.x;
             this.pt2.y = mouse.y;
         }
+        if (mouse.clicked) this.calcCrs();
+        if (!mouse.clicked) {
+            if (this.vNum === 1) {
+                this.crs = Number(osCrsReadout.value)
+                setOsCRS();
+            } else {
+                this.crs = Number(tgtCrsReadout.value)
+                setTgtCRS();
+            }
+        }
         if (plot.checked) this.calcLla();
         if (cpa.checked) this.calcLlaCpa();
-        this.calcCrs();
         this.calcSiSa();
-        this.SRM()
+        this.SRM();
     }
-    
+
 }
 let vector = new Vector(389, 389, 'blue', 1);
 let tgtVector = [new Vector(300, 550, 'red', 2), new Vector(500, 550, 'rgb(52, 156, 0)', 2), new Vector(450, 450, 'rgb(237, 131, 2)', 2)]
@@ -257,7 +268,10 @@ class Target {
         let a = degreesToRadians(this.brg - 90);
         this.x = canvas.width / 2 + l * Math.cos(a);
         this.y = canvas.height / 2 + l * Math.sin(a);
-        let pt1 = {x: this.x, y: this.y}
+        let pt1 = {
+            x: this.x,
+            y: this.y
+        }
         let pt2;
         let t = this.timeLate / 60;
         if (this.timeLate > 0) {
@@ -305,10 +319,16 @@ class Target {
         expBrgXingReadout[2].value = this.exBrgX[2].toFixed(1);
     }
     updateCurrentInfo() {
-        let cb = calcAngleOfLine({x: canvas.width/2, y: canvas.height/2}, {x: this.x, y: this.y});
+        let cb = calcAngleOfLine({
+            x: canvas.width / 2,
+            y: canvas.height / 2
+        }, {
+            x: this.x,
+            y: this.y
+        });
         this.currentBrg = cb.toFixed(1);
-        let dx = canvas.width/2 - this.x;
-        let dy = canvas.height/2 - this.y;
+        let dx = canvas.width / 2 - this.x;
+        let dy = canvas.height / 2 - this.y;
         let dist = Math.hypot(dx, dy) / 5;
         this.currentRng = dist.toFixed(1);
     }
@@ -475,7 +495,7 @@ function drawPlot() {
     moboard.numbers();
     moboard.draw();
     vector.update();
-    tgtVector[vectorSelect].update()
+    tgtVector[vectorSelect].update();
     target[vectorSelect].update();
     if (showOS.checked) {
         vector.draw();
@@ -517,7 +537,10 @@ function step() {
     target[0].updatePosition();
     target[1].updatePosition();
     target[2].updatePosition();
-    if (cpa.checked) {drawCPA(); updateReadout();}
+    if (cpa.checked) {
+        drawCPA();
+        updateReadout();
+    }
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt));
 }

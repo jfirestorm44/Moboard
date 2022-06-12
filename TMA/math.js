@@ -19,7 +19,13 @@ function calcVectorAngle(v1, v2, v) {
 }
 
 function calcSra() {
-    if ((vector.pt2.x < los.x && tgtVector[vectorSelect].pt2.x < los.x) || (vector.pt2.x >= los.x && tgtVector[vectorSelect].pt2.x >= los.x)) {
+    if (plot.checked) {
+        if ((vector.pt2.x < los.x && tgtVector[vectorSelect].pt2.x < los.x) || (vector.pt2.x >= los.x && tgtVector[vectorSelect].pt2.x >= los.x)) {
+            return Math.abs(Math.abs(vector.sa) - Math.abs(tgtVector[vectorSelect].sa));
+        }
+        return Math.abs(Math.abs(vector.sa) + Math.abs(tgtVector[vectorSelect].sa));
+    }
+    if (vectorRelation()) {
         return Math.abs(Math.abs(vector.sa) - Math.abs(tgtVector[vectorSelect].sa));
     }
     return Math.abs(Math.abs(vector.sa) + Math.abs(tgtVector[vectorSelect].sa));
@@ -71,38 +77,36 @@ function calcCpaLine(p1, p2, c) {
     //zcalcTgtDistAtCPA(intersectLines(p1, p2, pt1, pt2));
 }
 
-function CPA(speed1,course1,speed2,course2,range,bearing)
-{
-  let DTR = Math.PI / 180;
-  let x,y,xVel,yVel,dot,a,b,cpa;
+function CPA(speed1, course1, speed2, course2, range, bearing) {
+    let DTR = Math.PI / 180;
+    let x, y, xVel, yVel, dot, a, b, cpa;
 
-  x = range * Math.cos(DTR*bearing);
-  y = range * Math.sin(DTR*bearing);
-  xVel = speed2 * Math.cos(DTR*course2) - speed1 * Math.cos(DTR*course1);
-  yVel = speed2 * Math.sin(DTR*course2) - speed1 * Math.sin(DTR*course1);
-  dot = x * xVel + y * yVel;
-  if (dot >= 0.0) {
-    rngAtCpaReadout.value = "PAST";
-    timeUntilCpaReadout.value = "PAST";
-    return
-  }
-  a = xVel * xVel + yVel * yVel;
-  b = 2 * dot;
-  cpa = range * range - ((b*b)/(4*a));
-  if (cpa <= 0.0) {
-    rngAtCpaReadout.value = "PAST";
-    timeUntilCpaReadout.value = "PAST";
-    return
-  }
+    x = range * Math.cos(DTR * bearing);
+    y = range * Math.sin(DTR * bearing);
+    xVel = speed2 * Math.cos(DTR * course2) - speed1 * Math.cos(DTR * course1);
+    yVel = speed2 * Math.sin(DTR * course2) - speed1 * Math.sin(DTR * course1);
+    dot = x * xVel + y * yVel;
+    if (dot >= 0.0) {
+        rngAtCpaReadout.value = "PAST";
+        timeUntilCpaReadout.value = "PAST";
+        return
+    }
+    a = xVel * xVel + yVel * yVel;
+    b = 2 * dot;
+    cpa = range * range - ((b * b) / (4 * a));
+    if (cpa <= 0.0) {
+        rngAtCpaReadout.value = "PAST";
+        timeUntilCpaReadout.value = "PAST";
+        return
+    }
     cpa = Math.sqrt(cpa);
     rngAtCpaReadout.value = cpa.toFixed(1);
-    timeUntilCpaReadout.value = numToTime(60*(-b/(2*a)))
+    timeUntilCpaReadout.value = numToTime(60 * (-b / (2 * a)))
 }
 
 
-function CalcSC()
-{
-  CPA(vector.spd,vector.crs, tgtVector[vectorSelect].spd,tgtVector[vectorSelect].crs, currentRng.value,currentBrg.value);
+function CalcSC() {
+    CPA(vector.spd, vector.crs, tgtVector[vectorSelect].spd, tgtVector[vectorSelect].crs, currentRng.value, currentBrg.value);
 }
 
 function numToTime(num) {
@@ -116,16 +120,23 @@ function numToTime(num) {
 
 function calcExpectedBrgRate(val, num) {
     let sra = Number(sraReadout.value);
-    let b =  sra * (0.95/val);
+    let b = sra * (0.95 / val);
     target[vectorSelect].exBrgR[num] = b;
     expBrgRateReadout[num].value = b.toFixed(3);
     calcExpectedBrgXing(b, num);
 }
 
 function calcExpectedBrgXing(val, num) {
-    let x = Math.abs(vector.sa) * (0.95/val);
-    target[vectorSelect].exBrgX[num] = x;
-    expBrgXingReadout[num].value = target[vectorSelect].exBrgX[num].toFixed(1);
+    let ts = Math.abs(tgtVector[vectorSelect].sa);
+    let os = Math.abs(vector.sa);
+    if (ts >= os && vectorRelation()) {
+        target[vectorSelect].exBrgX[num] = 0;
+        expBrgXingReadout[num].value = target[vectorSelect].exBrgX[num];
+    } else {
+        let x = Math.abs(vector.sa) * (0.95 / val);
+        target[vectorSelect].exBrgX[num] = x;
+        expBrgXingReadout[num].value = target[vectorSelect].exBrgX[num].toFixed(1);
+    }
 }
 
 function calcFRQc() {
@@ -141,9 +152,37 @@ function calcFRQo() {
     if (tgtVector[vectorSelect].lla < 90) {
         return (Number(frqcReadout.value) - tgtDopp)
     } else if (tgtVector[vectorSelect].lla > 90) {
-    return (Number(frqcReadout.value) + tgtDopp)
+        return (Number(frqcReadout.value) + tgtDopp)
     }
     return frqrReadout.value
+}
+
+function vectorRelation() {
+    //sign((Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax))
+    let x1, y1;
+    if (plot.checked) {
+        x1 = los.x;
+        y1 = los.y;
+    } else {
+        x1 = target[vectorSelect].x;
+        y1 = target[vectorSelect].y;
+    }
+    let x2 = canvas.width / 2;
+    let y2 = canvas.height / 2;
+    let a = Math.sign((x2 - x1) * (vector.pt2.y - y1) - (y2 - y1) * (vector.pt2.x - x1))
+    let b = Math.sign((x2 - x1) * (tgtVector[vectorSelect].pt2.y - y1) - (y2 - y1) * (tgtVector[vectorSelect].pt2.x - x1))
+    return a === b
+}
+
+function vectorRelation2(los, tbo) {
+    //sign((Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax))
+    let x1 = target[vectorSelect].x;
+    let y1 = target[vectorSelect].y;
+    let x2 = canvas.width / 2;
+    let y2 = canvas.height / 2;
+    let a = Math.sign((x2 - x1) * (vector.pt2.y - y1) - (y2 - y1) * (vector.pt2.x - x1))
+    let b = Math.sign((x2 - x1) * (tgtVector[vectorSelect].pt2.y - y1) - (y2 - y1) * (tgtVector[vectorSelect].pt2.x - x1))
+    return a === b
 }
 
 function intersectLines(coord1, coord2, coord3, coord4) {

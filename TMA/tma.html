@@ -18,11 +18,11 @@
         <div id="selection">
             <div>
                 <lable for="plot">Plot</lable>
-                <input type="radio" name="plotType" id="plot" onclick="drawPlot(), setReadout()" checked>
+                <input type="radio" name="plotType" id="plot" onclick="drawPlot(), setReadout()" tabindex="-1" checked>
             </div>
             <div>
                 <lable for="cpa">CPA</lable>
-                <input type="radio" name="plotType" id="cpa" onclick="drawCPA(), setReadout()">
+                <input type="radio" name="plotType" id="cpa" onclick="drawCPA(), setReadout()" tabindex="-1">
             </div>
         </div>
         <div id="generalData">
@@ -32,7 +32,7 @@
             </div>
             <div class="inpt">
                 <label for="tbo" class="name-label">TBO</label>
-                <input type="text" id="tbo" name="tbo" class="input_boxes" readonly>
+                <input type="text" id="tbo" name="tbo" class="input_boxes" tabindex="-1" readonly>
             </div>
         </div>
         <div id="platformWrapper">
@@ -51,26 +51,26 @@
                 </div>
                 <div class="inpt">
                     <label for="lla" class="name-label">LLA</label>
-                    <input type="text" id="lla" name="lla" class="input_boxes" readonly>
+                    <input type="text" id="lla" name="lla" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="soi" class="name-label">SPD<sub>oi</sub></label>
-                    <input type="text" id="soi" name="soi" class="input_boxes" readonly>
+                    <input type="text" id="soi" name="soi" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="soa" class="name-label">SPD<sub>oa</sub> </label>
-                    <input type="text" id="soa" name="soa" class="input_boxes" readonly>
+                    <input type="text" id="soa" name="soa" class="input_boxes" tabindex="-1" readonly>
                 </div>
             </div>
             <div id='lowerReadouts'>
                 <div id='lower'>
                     <div class="inpt">
                         <label for="sri" class="name-label">SPD<sub>ri</sub></label>
-                        <input type="text" id="sri" name="sri" class="input_boxes" readonly>
+                        <input type="text" id="sri" name="sri" class="input_boxes" tabindex="-1" readonly>
                     </div><br>
                     <div class="inpt">
                         <label for="sra" class="name-label">SPD<sub>ra</sub></label>
-                        <input type="text" id="sra" name="sra" class="input_boxes" readonly>
+                        <input type="text" id="sra" name="sra" class="input_boxes" tabindex="-1" readonly>
                     </div>
                 </div>
             </div>
@@ -89,15 +89,15 @@
                 </div>
                 <div class="inpt">
                     <label for="aob" class="name-label">AOB</label>
-                    <input type="text" id="aob" name="aob" class="input_boxes" readonly>
+                    <input type="text" id="aob" name="aob" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="sti" class="name-label">SPD<sub>ti</sub></label>
-                    <input type="text" id="sti" name="sti" class="input_boxes" readonly>
+                    <input type="text" id="sti" name="sti" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="sta" class="name-label">SPD<sub>ta</sub></label>
-                    <input type="text" id="sta" name="sta" class="input_boxes" readonly>
+                    <input type="text" id="sta" name="sta" class="input_boxes" tabindex="-1" readonly>
                 </div>
             </div>
         </div>
@@ -122,26 +122,26 @@
                 <p>Current</p>
                 <div class="inpt">
                     <label for="currentBrg" class="name-label">BRG</label>
-                    <input type="text" id="currentBrg" name="currentBrg" value="0" class="input_boxes" readonly>
+                    <input type="text" id="currentBrg" name="currentBrg" value="0" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="currentRng" class="name-label">RNG</label>
-                    <input type="text" id="currentRng" name="currentRng" value="0" class="input_boxes" readonly>
+                    <input type="text" id="currentRng" name="currentRng" value="0" class="input_boxes" tabindex="-1" readonly>
                 </div>
             </div>
             <div id="cpaOutput">
                 <p>Solution</p>
                 <div class="inpt">
                     <label for="cpaBrg" class="name-label">BRG</label>
-                    <input type="text" id="cpaBrg" name="cpaBrg" value="4" class="input_boxes" readonly>
+                    <input type="text" id="cpaBrg" name="cpaBrg" value="4" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="cpaRng" class="name-label">RNG</label>
-                    <input type="text" id="cpaRng" name="cpaRng" value="4" class="input_boxes" readonly>
+                    <input type="text" id="cpaRng" name="cpaRng" value="4" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="cpaTime" class="name-label">TIME</label>
-                    <input type="text" id="cpaTime" name="cpaTime" value="4" class="input_boxes" readonly>
+                    <input type="text" id="cpaTime" name="cpaTime" value="4" class="input_boxes" tabindex="-1" readonly>
                 </div>
             </div>
         </div>
@@ -160,11 +160,11 @@
                 </div>
                 <div class="inpt">
                     <label for="FRQc" class="name-label">FRQ<sub>c</sub></label>
-                    <input type="text" id="FRQc" name="FRQc" class="input_boxes" readonly>
+                    <input type="text" id="FRQc" name="FRQc" class="input_boxes" tabindex="-1" readonly>
                 </div>
                 <div class="inpt">
                     <label for="FRQo" class="name-label">FRQ<sub>o</sub></label>
-                    <input type="text" id="FRQo" name="FRQo" class="input_boxes" readonly>
+                    <input type="text" id="FRQo" name="FRQo" class="input_boxes" tabindex="-1" readonly>
                 </div>
             </div>
         </div>
@@ -178,29 +178,29 @@
             </div>
             <div id="brgRateReadout" class="expecteds">
                 <label for="brgRate" class="name-label">BRG<sup>o</sup></label>
-                <input type="text" id="brgRate1" name="brgRate" class="input_boxes brgRate" readonly>
-                <input type="text" id="brgRate2" name="brgRate" class="input_boxes brgRate" readonly>
-                <input type="text" id="brgRate3" name="brgRate" class="input_boxes brgRate" readonly>
+                <input type="text" id="brgRate1" name="brgRate" class="input_boxes brgRate" tabindex="-1" readonly>
+                <input type="text" id="brgRate2" name="brgRate" class="input_boxes brgRate" tabindex="-1" readonly>
+                <input type="text" id="brgRate3" name="brgRate" class="input_boxes brgRate" tabindex="-1" readonly>
             </div>
             <div id="brgXingReadout" class="expecteds">
                 <label for="brgXing" class="name-label">BRG X</label>
-                <input type="text" id="brgXing1" name="brgXing" class="input_boxes brgXing" readonly>
-                <input type="text" id="brgXing2" name="brgXing" class="input_boxes brgXing" readonly>
-                <input type="text" id="brgXing3" name="brgXing" class="input_boxes brgXing" readonly>
+                <input type="text" id="brgXing1" name="brgXing" class="input_boxes brgXing" tabindex="-1" readonly>
+                <input type="text" id="brgXing2" name="brgXing" class="input_boxes brgXing" tabindex="-1" readonly>
+                <input type="text" id="brgXing3" name="brgXing" class="input_boxes brgXing" tabindex="-1" readonly>
             </div>
         </div>
         <div id="targetSelection">
             <div>
                 <lable for="tgt1">TGT 1</lable>
-                <input type="radio" name="tgtSelect" id="tgt1" checked>
+                <input type="radio" name="tgtSelect" id="tgt1" tabindex="-1" checked>
             </div>
             <div>
                 <lable for="tgt2">TGT 2</lable>
-                <input type="radio" name="tgtSelect" id="tgt2">
+                <input type="radio" name="tgtSelect" id="tgt2" tabindex="-1">
             </div>
             <div>
                 <lable for="tgt3">TGT 3</lable>
-                <input type="radio" name="tgtSelect" id="tgt3">
+                <input type="radio" name="tgtSelect" id="tgt3" tabindex="-1">
             </div>
         </div>
     </form>

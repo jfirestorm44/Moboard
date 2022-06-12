@@ -29,30 +29,35 @@ let expBrgXingReadout = [document.getElementById('brgXing1'), document.getElemen
 let currentBrg = document.getElementById('currentBrg');
 let currentRng = document.getElementById('currentRng');
 let timeLate = document.getElementById('timeLate');
-let enter = false;
 
 function setReadout() {
     if (cpa.checked) {
         losReadout.value = 0;
         brg = 0;
-        drawCPA();
-        updateReadout()
         losReadout.setAttribute('readonly', 'readonly');
         losReadout.style.color = "lightgrey";
         cpaTgtBrgReadout.removeAttribute('readonly');
         cpaRngReadout.removeAttribute('readonly');
         cpaTgtBrgReadout.style.color = "black";
         cpaRngReadout.style.color = "black";
+        timeLate.style.color = "black";
+        timeLate.removeAttribute('readonly');
+        drawCPA();
+        updateReadout()
     }
     if (plot.checked) {
-        drawPlot();
-        updateReadout()
+        losReadout.value = target[vectorSelect].currentBrg;
+        brg = Number(losReadout.value);
         losReadout.removeAttribute('readonly');
         losReadout.style.color = "black";
         cpaTgtBrgReadout.setAttribute('readonly', 'readonly');
         cpaRngReadout.setAttribute('readonly', 'readonly');
         cpaTgtBrgReadout.style.color = "lightgrey";
         cpaRngReadout.style.color = "lightgrey";
+        timeLate.setAttribute('readonly', 'readonly');
+        timeLate.style.color = 'lightgrey';
+        drawPlot();
+        updateReadout()
     }
 }
 
@@ -61,7 +66,7 @@ function updateReadout() {
     tgtVector[vectorSelect].setSpeed();
     aobReadout.value = tgtVector[vectorSelect].lla.toFixed(1);
     losReadout.value = brg.toFixed(1);
-    tboReadout.value = brg <= 180 ? brg + 180 : brg - 180;
+    plot.checked ? tboReadout.value = (brg <= 180 ? brg + 180 : brg - 180).toFixed(1) : tboReadout.value = (target[vectorSelect].brg <= 180 ? target[vectorSelect].brg + 180 : target[vectorSelect].brg - 180).toFixed(1)
     osCrsReadout.value = vector.crs.toFixed(1);
     tgtCrsReadout.value = tgtVector[vectorSelect].crs.toFixed(1);
     llaReadout.value = vector.lla.toFixed(1);
@@ -85,156 +90,167 @@ function updateReadout() {
 }
 
 losReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         if (losReadout.value > 359.9) {
             losReadout.value = 0;
         }
-        brg = parseInt(losReadout.value)
-        if (plot.checked) drawPlot();
+        brg = Number(losReadout.value)
+        if (plot.checked) {
+            drawPlot();
+            setOsCRS();
+            setOsSPD();
+            setTgtCRS();
+            setTgtSPD();
+        }
+        updateReadout();
     }
 })
 
 spdoReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         if (spdoReadout.value > 30) spdoReadout.value = 30;
-        vector.spd = parseInt(spdoReadout.value);
-        let l = vector.spd * 10;
-        let a = calcVectorAngle(vector.pt1, vector.pt2, vector);
-        let aOffset = degreesToRadians(90);
-        vector.pt2.x = vector.pt1.x + l * Math.cos(a + aOffset);
-        vector.pt2.y = vector.pt1.y + l * Math.sin(a + aOffset);
+        setOsSPD();
         if (plot.checked) drawPlot();
         if (cpa.checked) drawCPA();
+        updateReadout();
     }
 })
 
 osCrsReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         if (osCrsReadout.value > 359.9) osCrsReadout.value = 359.9;
-        let l = vector.spd * 10;
-        let a = degreesToRadians(parseInt(osCrsReadout.value));
-        let aOffset = degreesToRadians(90 + brg);
-        vector.pt2.x = vector.pt1.x + l * Math.cos(a - aOffset);
-        vector.pt2.y = vector.pt1.y + l * Math.sin(a - aOffset);
+        setOsCRS();
         if (plot.checked) drawPlot();
         if (cpa.checked) drawCPA();
+        updateReadout();
     }
 })
 
 tgtCrsReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         if (tgtCrsReadout.value > 359.9) tgtCrsReadout.value = 359.9;
-        tgtVector[vectorSelect].crs = parseInt(tgtCrsReadout.value);
-        let l = tgtVector[vectorSelect].spd * 10;
-        let a = degreesToRadians(parseInt(tgtCrsReadout.value));
-        let aOffset = degreesToRadians(90 + brg);
-        tgtVector[vectorSelect].pt2.x = tgtVector[vectorSelect].pt1.x + l * Math.cos(a - aOffset);
-        tgtVector[vectorSelect].pt2.y = tgtVector[vectorSelect].pt1.y + l * Math.sin(a - aOffset);
+        setTgtCRS();
         if (plot.checked) drawPlot();
-        if (cpa.checked)  drawCPA()
+        if (cpa.checked) drawCPA();
+        updateReadout();
     }
 })
 
 spdtReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         if (spdtReadout.value > 30) spdtReadout.value = 30;
-        tgtVector[vectorSelect].spd = parseFloat(spdtReadout.value);
-        let l = tgtVector[vectorSelect].spd * 10;
-        let a = calcVectorAngle(tgtVector[vectorSelect].pt1, tgtVector[vectorSelect].pt2, tgtVector[vectorSelect]);
-        let aOffset = degreesToRadians(90);
-        tgtVector[vectorSelect].pt2.x = tgtVector[vectorSelect].pt1.x + l * Math.cos(a - aOffset);
-        tgtVector[vectorSelect].pt2.y = tgtVector[vectorSelect].pt1.y + l * Math.sin(a - aOffset);
+        setTgtSPD();
         if (plot.checked) drawPlot();
         if (cpa.checked) drawCPA();
+        updateReadout();
     }
 })
 
 ssReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true
+    if (e.code == 'Enter' || e.code === 'Tab') {
         target[vectorSelect].ss = Number(ssReadout.value);
+        updateReadout();
     }
 })
 
 frqrReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true
+    if (e.code == 'Enter' || e.code === 'Tab') {
         target[vectorSelect].frqr = Number(frqrReadout.value);
         target[vectorSelect].frqc = frqcReadout.value = calcFRQc(target[vectorSelect].ss).toFixed(3);
         target[vectorSelect].frqo = frqoReadout.value = calcFRQo(target[vectorSelect].ss).toFixed(3);
+        updateReadout();
     }
 })
 
 //CPA CONTROLS
 cpaTgtBrgReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab' && cpa.checked) {
         if (cpaTgtBrgReadout.value > 359.9) {
             cpaTgtBrgReadout.value = 0;
         }
-        target[vectorSelect].brg = parseInt(cpaTgtBrgReadout.value);
+        target[vectorSelect].brg = Number(cpaTgtBrgReadout.value);
         target[vectorSelect].setPosition();
         target[vectorSelect].updateCurrentInfo();
-        updateReadout()
         drawCPA();
+        updateReadout();
     }
 })
 
 cpaRngReadout.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
-        target[vectorSelect].rng = parseInt(cpaRngReadout.value);
+    if (e.code == 'Enter' || e.code === 'Tab' && cpa.checked) {
+        target[vectorSelect].rng = Number(cpaRngReadout.value);
         target[vectorSelect].setPosition();
         target[vectorSelect].updateCurrentInfo();
-        updateReadout()
         drawCPA();
+        updateReadout();
     }
 })
 
 timeLate.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab' && cpa.checked) {
         target[vectorSelect].timeLate = Number(timeLate.value)
         target[vectorSelect].setPosition();
         target[vectorSelect].updateCurrentInfo();
-        updateReadout()
         drawCPA();
+        updateReadout();
     }
 })
 
 expRngReadout0.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         target[vectorSelect].exRng[0] = Number(expRngReadout0.value);
         calcExpectedBrgRate(target[vectorSelect].exRng[0], 0)
     }
 })
 
 expRngReadout1.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         target[vectorSelect].exRng[1] = Number(expRngReadout1.value);
         calcExpectedBrgRate(target[vectorSelect].exRng[1], 1)
     }
 })
 
 expRngReadout2.addEventListener('keydown', e => {
-    if (e.code == 'Enter' && !enter) {
-        enter = true;
+    if (e.code == 'Enter' || e.code === 'Tab') {
         target[vectorSelect].exRng[2] = Number(expRngReadout2.value);
         calcExpectedBrgRate(target[vectorSelect].exRng[2], 2)
     }
 })
 
-window.addEventListener('keyup', e => {
-    if (e.code == 'Enter') {
-        enter = false;
-    }
-})
+function setOsCRS() {
+    vector.crs = Number(osCrsReadout.value);
+    let l = vector.spd * 10;
+    let a = degreesToRadians(Number(osCrsReadout.value));
+    let aOffset = degreesToRadians(90 + brg);
+    vector.pt2.x = vector.pt1.x + l * Math.cos(a - aOffset);
+    vector.pt2.y = vector.pt1.y + l * Math.sin(a - aOffset);
+}
+
+function setOsSPD() {
+    vector.spd = Number(spdoReadout.value);
+    let l = vector.spd * 10;
+    let a = calcVectorAngle(vector.pt1, vector.pt2, vector);
+    let aOffset = degreesToRadians(90);
+    vector.pt2.x = vector.pt1.x + l * Math.cos(a + aOffset);
+    vector.pt2.y = vector.pt1.y + l * Math.sin(a + aOffset);
+}
+
+function setTgtCRS() {
+    tgtVector[vectorSelect].crs = Number(tgtCrsReadout.value);
+    let l = tgtVector[vectorSelect].spd * 10;
+    let a = degreesToRadians(Number(tgtCrsReadout.value));
+    let aOffset = degreesToRadians(90 + brg);
+    tgtVector[vectorSelect].pt2.x = tgtVector[vectorSelect].pt1.x + l * Math.cos(a - aOffset);
+    tgtVector[vectorSelect].pt2.y = tgtVector[vectorSelect].pt1.y + l * Math.sin(a - aOffset);
+}
+
+function setTgtSPD() {
+    tgtVector[vectorSelect].spd = Number(spdtReadout.value);
+    let l = tgtVector[vectorSelect].spd * 10;
+    let a = calcVectorAngle(tgtVector[vectorSelect].pt1, tgtVector[vectorSelect].pt2, tgtVector[vectorSelect]);
+    let aOffset = degreesToRadians(90);
+    tgtVector[vectorSelect].pt2.x = tgtVector[vectorSelect].pt1.x + l * Math.cos(a - aOffset);
+    tgtVector[vectorSelect].pt2.y = tgtVector[vectorSelect].pt1.y + l * Math.sin(a - aOffset);
+}
 
 window.onload = load()
