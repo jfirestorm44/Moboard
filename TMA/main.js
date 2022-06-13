@@ -399,13 +399,6 @@ function drawDRM() {
     ctx.stroke();
     //position = sign((Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax))
     let check = Math.sign((x3 - c.x) * (target[vectorSelect].y - c.y) - (y3 - c.y) * (target[vectorSelect].x - c.x));
-    calcCpaLine({
-        x: target[vectorSelect].x,
-        y: target[vectorSelect].y
-    }, {
-        x: x2,
-        y: y2
-    }, check);
 }
 
 canvas.addEventListener("mousemove", e => {
@@ -422,8 +415,6 @@ canvas.addEventListener("mousedown", () => {
 canvas.addEventListener("mouseup", () => {
     mouse.clicked = false;
     cancelAnimationFrame(draw);
-    //if (plot.checked) updatePlot();
-    //if (cpa.checked) updateCPA();
     updateReadout()
 })
 

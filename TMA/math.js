@@ -63,20 +63,6 @@ function calcSRM(t) {
     return degreesToRadians(theta);
 }
 
-function calcCpaLine(p1, p2, c) {
-    let a = degreesToRadians(calcCPA(c) - 90);
-    let pt2 = {
-        x: canvas.width / 2 + 100 * Math.cos(a),
-        y: canvas.height / 2 + 100 * Math.sin(a)
-    };
-    let pt1 = {
-        x: canvas.width / 2,
-        y: canvas.height / 2
-    };
-    //calcTgtDistToCPA(intersectLines(p1, p2, pt1, pt2));
-    //zcalcTgtDistAtCPA(intersectLines(p1, p2, pt1, pt2));
-}
-
 function CPA(speed1, course1, speed2, course2, range, bearing) {
     let DTR = Math.PI / 180;
     let x, y, xVel, yVel, dot, a, b, cpa;

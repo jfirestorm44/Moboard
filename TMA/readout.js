@@ -66,7 +66,8 @@ function updateReadout() {
     tgtVector[vectorSelect].setSpeed();
     aobReadout.value = tgtVector[vectorSelect].lla.toFixed(1);
     losReadout.value = brg.toFixed(1);
-    plot.checked ? tboReadout.value = (brg <= 180 ? brg + 180 : brg - 180).toFixed(1) : tboReadout.value = (target[vectorSelect].brg <= 180 ? target[vectorSelect].brg + 180 : target[vectorSelect].brg - 180).toFixed(1)
+    plot.checked ? tboReadout.value = (brg <= 180 ? brg + 180 : brg - 180).toFixed(1) : tboReadout.value = (target[vectorSelect].currentBrg <= 180 ? target[vectorSelect].currentBrg + 180 : target[vectorSelect].currentBrg - 180).toFixed(1)
+    console.log(target[vectorSelect].currentBrg)
     osCrsReadout.value = vector.crs.toFixed(1);
     tgtCrsReadout.value = tgtVector[vectorSelect].crs.toFixed(1);
     llaReadout.value = vector.lla.toFixed(1);
