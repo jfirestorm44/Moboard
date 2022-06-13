@@ -184,11 +184,12 @@ class Vector {
     }
     calcSiSa() {
         let a, tbo;
-        tbo = Number(tboReadout.value)
         if (plot.checked) {
+            tbo = brg <= 180 ? brg + 180 : brg - 180
             this.vNum === 1 ? a = degreesToRadians(brg - this.crs) : a = degreesToRadians(tbo - this.crs);
         } 
         else {
+            tbo = target[vectorSelect].currentBrg <= 180 ? target[vectorSelect].currentBrg + 180 : target[vectorSelect].currentBrg - 180
             this.vNum === 1 ? a = degreesToRadians(target[vectorSelect].currentBrg - this.crs) : a = degreesToRadians(tbo - this.crs);
         }
         this.si = Math.cos(a) * this.spd;
@@ -433,13 +434,13 @@ tgt1.addEventListener('change', () => {
     target[vectorSelect].updateExpecteds()
     updateReadout()
     if (plot.checked) {
-        //updatePlot();
+        updateReadout()
         drawPlot();
     } else {
-        //updateCPA();
+        updateReadout()
         drawCPA();
     }
-    updateReadout()
+    
 });
 
 tgt2.addEventListener('change', () => {
@@ -447,13 +448,12 @@ tgt2.addEventListener('change', () => {
     target[vectorSelect].updateExpecteds()
     updateReadout()
     if (plot.checked) {
-        //updatePlot();
         drawPlot();
+        updateReadout()
     } else {
-        //updateCPA();
         drawCPA();
+        updateReadout()
     }
-    updateReadout()
 });
 
 tgt3.addEventListener('change', () => {
@@ -461,13 +461,12 @@ tgt3.addEventListener('change', () => {
     target[vectorSelect].updateExpecteds()
     updateReadout()
     if (plot.checked) {
-        //updatePlot();
+        updateReadout()
         drawPlot();
     } else {
-        //updateCPA();
+        updateReadout() 
         drawCPA();
     }
-    updateReadout()
 });
 
 function degreesToRadians(deg) {
