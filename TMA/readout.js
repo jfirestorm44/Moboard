@@ -66,7 +66,9 @@ function updateReadout() {
     tgtVector[vectorSelect].setSpeed();
     aobReadout.value = tgtVector[vectorSelect].lla.toFixed(1);
     losReadout.value = brg.toFixed(1);
-    plot.checked ? tboReadout.value = brg <= 180 ? brg + 180 : brg - 180 : tboReadout.value = target[vectorSelect].currentBrg <= 180 ? target[vectorSelect].currentBrg + 180 : target[vectorSelect].currentBrg - 180;
+    if (plot.checked) tboReadout.value = brg <= 180 ? brg + 180 : brg - 180;
+    //here to fixed
+    if (cpa.checked) tboReadout.value = Number(target[vectorSelect].tbo).toFixed(1);
     osCrsReadout.value = vector.crs.toFixed(1);
     tgtCrsReadout.value = tgtVector[vectorSelect].crs.toFixed(1);
     llaReadout.value = vector.lla.toFixed(1);
@@ -156,8 +158,8 @@ ssReadout.addEventListener('keydown', e => {
 frqrReadout.addEventListener('keydown', e => {
     if (e.code == 'Enter' || e.code === 'Tab') {
         target[vectorSelect].frqr = Number(frqrReadout.value);
-        target[vectorSelect].frqc = frqcReadout.value = calcFRQc(target[vectorSelect].ss).toFixed(3);
-        target[vectorSelect].frqo = frqoReadout.value = calcFRQo(target[vectorSelect].ss).toFixed(3);
+        target[vectorSelect].frqc = calcFRQc(target[vectorSelect].ss);
+        target[vectorSelect].frqo = calcFRQo(target[vectorSelect].ss);
         updateReadout();
     }
 })

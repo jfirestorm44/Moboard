@@ -189,8 +189,7 @@ class Vector {
             this.vNum === 1 ? a = degreesToRadians(brg - this.crs) : a = degreesToRadians(tbo - this.crs);
         } 
         else {
-            tbo = target[vectorSelect].currentBrg <= 180 ? target[vectorSelect].currentBrg + 180 : target[vectorSelect].currentBrg - 180
-            this.vNum === 1 ? a = degreesToRadians(target[vectorSelect].currentBrg - this.crs) : a = degreesToRadians(tbo - this.crs);
+            this.vNum === 1 ? a = degreesToRadians(target[vectorSelect].currentBrg - this.crs) : a = degreesToRadians(target[vectorSelect].tbo - this.crs);
         }
         this.si = Math.cos(a) * this.spd;
         this.sa = Math.sin(a) * this.spd;
@@ -239,6 +238,7 @@ class Target {
         this.exBrgR = [0, 0, 0];
         this.exBrgX = [0, 0, 0];
         this.currentBrg = 0;
+        this.tbo = this.currentBrg <= 180 ? this.currentBrg + 180 : this.currentBrg - 180; //here
         this.currentRng = 0;
         this.srm = 0;
         this.frqr = 0;
@@ -328,6 +328,8 @@ class Target {
             y: this.y
         });
         this.currentBrg = cb.toFixed(1);
+        this.tbo = Number(this.currentBrg) + 180;
+        if (this.tbo >= 360) this.tbo -= 360;
         let dx = canvas.width / 2 - this.x;
         let dy = canvas.height / 2 - this.y;
         let dist = Math.hypot(dx, dy) / 5;
@@ -400,6 +402,7 @@ function drawDRM() {
     ctx.stroke();
     //position = sign((Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax))
     let check = Math.sign((x3 - c.x) * (target[vectorSelect].y - c.y) - (y3 - c.y) * (target[vectorSelect].x - c.x));
+    calcCPA(check)
 }
 
 canvas.addEventListener("mousemove", e => {
@@ -529,8 +532,9 @@ function step() {
     target[2].updatePosition();
     if (cpa.checked) {
         drawCPA();
-        updateReadout();
+        
     }
+    updateReadout();                              //here
     expected += interval;
     setTimeout(step, Math.max(0, interval - dt));
 }
@@ -549,11 +553,9 @@ function animate() {
     updateReadout()
     if (plot.checked) {
         drawPlot();
-        //updatePlot();
     }
     if (cpa.checked) {
         drawCPA();
-        //updateCPA();
     }
     draw = requestAnimationFrame(animate);
 }

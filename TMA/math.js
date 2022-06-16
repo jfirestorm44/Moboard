@@ -17,7 +17,7 @@ function calcVectorAngle(v1, v2, v) {
     let theta = calcAngleOfLine(v1, v2, v);
     return degreesToRadians(theta);
 }
-
+//here
 function calcSra() {
     if (plot.checked) {
         if ((vector.pt2.x < los.x && tgtVector[vectorSelect].pt2.x < los.x) || (vector.pt2.x >= los.x && tgtVector[vectorSelect].pt2.x >= los.x)) {
@@ -56,9 +56,16 @@ function calcCPA(check) {
         return val;
     }
 }
-
+//here
 function calcSRM(t) {
-    let theta = calcAngleOfLine(vector.pt2, t);
+    let theta;
+    if (cpa.checked) {
+        theta = calcAngleOfLine(vector.pt2, t)
+    }
+    if (plot.checked) {
+        let diff = calcAngleOfLine(vector.pt1, vector.pt2)
+        theta = calcAngleOfLine(vector.pt2, t) - diff.toFixed(1);
+    }
     CalcSC()
     return degreesToRadians(theta);
 }
@@ -124,23 +131,21 @@ function calcExpectedBrgXing(val, num) {
         expBrgXingReadout[num].value = target[vectorSelect].exBrgX[num].toFixed(1);
     }
 }
-
-function calcFRQc() {
-    let osDopp = vector.si * Number(ssReadout.value);
+//here
+function calcFRQc(ss) {
+    let osDopp = Math.abs(vector.si) * ss;
     if (vector.lla < 90) {
-        return (Number(frqrReadout.value) - osDopp)
+        return (Number(target[vectorSelect].frqr) - osDopp).toFixed(3)
     }
-    return (Number(frqrReadout.value) + osDopp)
+    return (Number(target[vectorSelect].frqr) + osDopp).toFixed(3)
 }
 
-function calcFRQo() {
-    let tgtDopp = tgtVector[vectorSelect].si * Number(ssReadout.value);
+function calcFRQo(ss) {
+    let tgtDopp = Math.abs(tgtVector[vectorSelect].si) * ss;
     if (tgtVector[vectorSelect].lla < 90) {
-        return (Number(frqcReadout.value) - tgtDopp)
-    } else if (tgtVector[vectorSelect].lla > 90) {
-        return (Number(frqcReadout.value) + tgtDopp)
+        return (Number(target[vectorSelect].frqc) - tgtDopp).toFixed(3)
     }
-    return frqrReadout.value
+    return (Number(target[vectorSelect].frqc) + tgtDopp).toFixed(3)
 }
 
 function vectorRelation() {
@@ -153,17 +158,6 @@ function vectorRelation() {
         x1 = target[vectorSelect].x;
         y1 = target[vectorSelect].y;
     }
-    let x2 = canvas.width / 2;
-    let y2 = canvas.height / 2;
-    let a = Math.sign((x2 - x1) * (vector.pt2.y - y1) - (y2 - y1) * (vector.pt2.x - x1))
-    let b = Math.sign((x2 - x1) * (tgtVector[vectorSelect].pt2.y - y1) - (y2 - y1) * (tgtVector[vectorSelect].pt2.x - x1))
-    return a === b
-}
-
-function vectorRelation2(los, tbo) {
-    //sign((Bx - Ax) * (Y - Ay) - (By - Ay) * (X - Ax))
-    let x1 = target[vectorSelect].x;
-    let y1 = target[vectorSelect].y;
     let x2 = canvas.width / 2;
     let y2 = canvas.height / 2;
     let a = Math.sign((x2 - x1) * (vector.pt2.y - y1) - (y2 - y1) * (vector.pt2.x - x1))
